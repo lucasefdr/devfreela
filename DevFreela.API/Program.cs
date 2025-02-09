@@ -1,4 +1,7 @@
 using DevFreela.API.Configurations;
+using DevFreela.Application.Services.Implementations;
+using DevFreela.Application.Services.Interfaces;
+using DevFreela.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +14,14 @@ builder.Services.AddSwaggerGen();
 
 // Padrão Option com configurações
 builder.Services.Configure<OpeningTimeOption>(builder.Configuration.GetSection("OpeningTime"));
+
+// Configuração do contexto de banco de dados
+builder.Services.AddSingleton<DevFreelaDbContext>();
+
+// Configurações de injeção de dependência
+builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
 
 var app = builder.Build();
 
