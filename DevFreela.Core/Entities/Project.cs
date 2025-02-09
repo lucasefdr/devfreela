@@ -13,7 +13,7 @@ public class Project : BaseEntity
     public DateTime? StartedAt { get; private set; }
     public DateTime FinishedAt { get; private set; }
     public ProjectStatusEnum Status { get; private set; }
-    public List<Comments> Comments { get; private set; }
+    public List<ProjectComment> Comments { get; private set; }
 
     public Project(string title, string description, int idClient, int idFreelancer, decimal totalCost)
     {
@@ -26,5 +26,36 @@ public class Project : BaseEntity
         CreatedAt = DateTime.Now;
         Status = ProjectStatusEnum.Created;
         Comments = [];
+    }
+
+    public void Cancel()
+    {
+        if (Status == ProjectStatusEnum.InProgress || Status == ProjectStatusEnum.Created)
+            Status = ProjectStatusEnum.Cancelled;
+    }
+
+    public void Start()
+    {
+        if (Status == ProjectStatusEnum.Created)
+        {
+            Status = ProjectStatusEnum.InProgress;
+            StartedAt = DateTime.Now;
+        }
+    }
+
+    public void Finish()
+    {
+        if (Status == ProjectStatusEnum.InProgress)
+        {
+            Status = ProjectStatusEnum.Finished;
+            FinishedAt = DateTime.Now;
+        }
+    }
+
+    public void Update(string title, string description, decimal totalCost)
+    {
+        Title = title;
+        Description = description;
+        TotalCost = totalCost;
     }
 }
