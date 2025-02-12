@@ -10,9 +10,10 @@ public class User : BaseEntity
         IsActive = true;
         CreatedAt = DateTime.Now;
 
-        Skills = [];
+        UserSkills = [];
         OwnedProjects = [];
         FreelanceProjects = [];
+        Comments = [];
     }
 
     public string FullName { get; private set; }
@@ -21,7 +22,7 @@ public class User : BaseEntity
     public DateTime CreatedAt { get; private set; }
     public bool IsActive { get; set; }
 
-    public List<UserSkill> Skills { get; private set; }
+    public List<UserSkill> UserSkills { get; private set; }
     public List<Project> OwnedProjects { get; private set; }
     public List<Project> FreelanceProjects { get; private set; }
 

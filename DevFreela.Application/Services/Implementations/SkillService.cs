@@ -20,5 +20,7 @@ public class SkillService : ISkillService
         var skillViewModel = skills
             .Select(s => new SkillViewModel(s.Id, s.Description))
             .ToList();
+
+        return skillViewModel;
     }
 }

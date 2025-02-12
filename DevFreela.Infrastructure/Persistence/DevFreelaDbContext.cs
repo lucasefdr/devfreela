@@ -7,6 +7,11 @@ namespace DevFreela.Infrastructure.Persistence;
 
 public class DevFreelaDbContext : DbContext
 {
+    public DevFreelaDbContext(DbContextOptions<DevFreelaDbContext> options) : base(options)
+    {
+
+    }
+
     // Tabelas
     public DbSet<Project> Projects { get; set; }
     public DbSet<User> Users { get; set; }
