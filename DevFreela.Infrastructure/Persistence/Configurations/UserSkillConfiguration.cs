@@ -10,6 +10,5 @@ public class UserSkillConfiguration : IEntityTypeConfiguration<UserSkill>
     {
         builder.HasOne(us => us.User).WithMany(u => u.UserSkills).HasForeignKey(us => us.IdUser);
         builder.HasOne(us => us.Skill).WithMany(s => s.UserSkills).HasForeignKey(us => us.IdSkill);
-
     }
 }

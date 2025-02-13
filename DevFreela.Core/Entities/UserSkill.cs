@@ -1,6 +1,6 @@
 ﻿namespace DevFreela.Core.Entities;
 
-public class UserSkill : BaseEntity
+public class UserSkill
 {
     public int IdUser { get; private set; }
     public User? User { get; private set; }

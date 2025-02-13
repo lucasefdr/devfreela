@@ -1,4 +1,7 @@
 ﻿using DevFreela.API.Models;
+using DevFreela.Application.InputModels.User;
+using DevFreela.Application.Services.Interfaces;
+using DevFreela.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevFreela.API.Controllers;
@@ -7,16 +10,24 @@ namespace DevFreela.API.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
+    private readonly IUserService _userService;
+
+    public UsersController(IUserService userService)
+    {
+        _userService = userService;
+    }
+
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
-        return Ok();
+        return Ok(_userService.GetUser(id));
     }
 
     [HttpPost]
-    public IActionResult Post([FromBody] CreateUserModel model)
+    public IActionResult Post([FromBody] CreateUserInputModel model)
     {
-        return CreatedAtAction(nameof(GetById), new { id = 1 }, model);
+        var newId = _userService.Create(model);
+        return CreatedAtAction(nameof(GetById), new { id = newId }, model);
     }
 
     [HttpPut("{id}")]

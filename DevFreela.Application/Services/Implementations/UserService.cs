@@ -18,9 +18,8 @@ public class UserService : IUserService
     public int Create(CreateUserInputModel inputModel)
     {
         var newUser = new User(inputModel.FullName, inputModel.Email, inputModel.BirthDate);
-
         _context.Users.Add(newUser);
-
+        _context.SaveChanges();
         return newUser.Id;
     }
 
@@ -28,7 +27,7 @@ public class UserService : IUserService
     {
         var user = _context.Users.SingleOrDefault(u => u.Id == id);
 
-        if (user is null) 
+        if (user is null)
             return null;
 
         var userViewModel = new UserViewModel(user.FullName, user.Email);
