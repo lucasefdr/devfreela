@@ -1,4 +1,5 @@
 using DevFreela.API.Configurations;
+using DevFreela.Application.Commands.CreateProject;
 using DevFreela.Application.Services.Implementations;
 using DevFreela.Application.Services.Interfaces;
 using DevFreela.Infrastructure.Persistence;
@@ -27,6 +28,9 @@ builder.Services.AddDbContext<DevFreelaDbContext>(options =>
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISkillService, SkillService>();
+
+// Configurando MediatR
+builder.Services.AddMediatR(options => options.RegisterServicesFromAssemblyContaining(typeof(CreateProjectCommand)));
 
 var app = builder.Build();
 

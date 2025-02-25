@@ -5,7 +5,7 @@ using DevFreela.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace DevFreela.API.Controllers;
+namespace DevFreela.API.Controllers.v1;
 
 [Route("api/[controller]")]
 [ApiController]
