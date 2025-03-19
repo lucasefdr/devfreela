@@ -1,6 +1,6 @@
 ﻿using DevFreela.Application.InputModels.User;
 using DevFreela.Application.Services.Interfaces;
-using DevFreela.Application.ViewModels;
+using DevFreela.Application.ViewModels.User;
 using DevFreela.Core.Entities;
 using DevFreela.Infrastructure.Persistence;
 
@@ -30,7 +30,7 @@ public class UserService : IUserService
         if (user is null)
             return null;
 
-        var userViewModel = new UserViewModel(user.FullName, user.Email);
+        var userViewModel = new UserViewModel(user.FullName, user.Email, []);
         return userViewModel;
     }
 }

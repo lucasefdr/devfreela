@@ -1,4 +1,5 @@
-﻿using DevFreela.API.Models;
+﻿using Asp.Versioning;
+using DevFreela.API.Models;
 using DevFreela.Application.InputModels.User;
 using DevFreela.Application.Services.Interfaces;
 using DevFreela.Infrastructure.Persistence;
@@ -6,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DevFreela.API.Controllers.v1;
 
-[Route("api/[controller]")]
+
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
 public class UsersController : ControllerBase
 {

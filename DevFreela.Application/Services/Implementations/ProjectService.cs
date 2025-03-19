@@ -16,7 +16,7 @@ public class ProjectService : IProjectService
         _context = context;
     }
 
-    public int Create(NewProjectInputModel inputModel)
+    public int Create(CreateProjectInputModel inputModel)
     {
         var project = new Project(inputModel.Title, inputModel.Description, inputModel.IdClient, inputModel.IdFreelancer, inputModel.TotalCost);
         _context.Projects.Add(project); // Insert 
@@ -73,6 +73,7 @@ public class ProjectService : IProjectService
             project.Description,
             project.StartedAt,
             project.FinishedAt,
+            project.Status.ToString(),
             project.Client!.FullName,
             project.Freelancer!.FullName);
 

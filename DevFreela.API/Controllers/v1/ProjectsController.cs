@@ -1,4 +1,5 @@
-﻿using DevFreela.API.Configurations;
+﻿using Asp.Versioning;
+using DevFreela.API.Configurations;
 using DevFreela.API.Models;
 using DevFreela.Application.InputModels.Project;
 using DevFreela.Application.Services.Interfaces;
@@ -7,7 +8,8 @@ using Microsoft.Extensions.Options;
 
 namespace DevFreela.API.Controllers.v1;
 
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{v:apiVersion}/[controller]")]
 [ApiController]
 public class ProjectsController : ControllerBase
 {
@@ -39,7 +41,7 @@ public class ProjectsController : ControllerBase
 
     // api/projects
     [HttpPost]
-    public IActionResult Post([FromBody] NewProjectInputModel model)
+    public IActionResult Post([FromBody] CreateProjectInputModel model)
     {
         var newId = _projectService.Create(model);
 

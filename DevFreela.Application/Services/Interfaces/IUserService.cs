@@ -1,5 +1,5 @@
 ﻿using DevFreela.Application.InputModels.User;
-using DevFreela.Application.ViewModels;
+using DevFreela.Application.ViewModels.User;
 using DevFreela.Core.Entities;
 
 namespace DevFreela.Application.Services.Interfaces;

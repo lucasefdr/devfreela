@@ -1,11 +1,13 @@
-﻿using DevFreela.Application.Commands.CancelProject;
-using DevFreela.Application.Commands.CreateComment;
-using DevFreela.Application.Commands.CreateProject;
-using DevFreela.Application.Commands.FinishProject;
-using DevFreela.Application.Commands.StartProject;
-using DevFreela.Application.Commands.UpdateProject;
-using DevFreela.Application.Queries.GetAllProjects;
-using DevFreela.Application.Queries.GetProjectById;
+﻿using Asp.Versioning;
+using DevFreela.Application.Commands.ProjectCommands.CancelProject;
+using DevFreela.Application.Commands.ProjectCommands.CreateComment;
+using DevFreela.Application.Commands.ProjectCommands.CreateProject;
+using DevFreela.Application.Commands.ProjectCommands.FinishProject;
+using DevFreela.Application.Commands.ProjectCommands.StartProject;
+using DevFreela.Application.Commands.ProjectCommands.UpdateProject;
+using DevFreela.Application.Queries.ProjectQueries.GetAllProjects;
+using DevFreela.Application.Queries.ProjectQueries.GetProject;
+using DevFreela.Application.Queries.ProjectQueries.GetProjectComments;
 using DevFreela.Application.ViewModels.Project;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +15,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace DevFreela.API.Controllers.v2;
 
 [ApiController]
-[Route("api/v2/[controller]")]
+[ApiVersion("2.0")]
+[Route("api/v{v:apiVersion}/[controller]")]
 public class ProjectsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -24,7 +27,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProjectViewModel>>> Get()
+    public async Task<ActionResult<List<ProjectViewModel>>> GetAll()
     {
         var query = new GetAllProjectsQuery();
         var projects = await _mediator.Send(query);
@@ -33,9 +36,9 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ProjectDetailsViewModel>> GetById(int id)
+    public async Task<ActionResult<ProjectDetailsViewModel>> Get(int id)
     {
-        var query = new GetProjectByIdQuery(id);
+        var query = new GetProjectQuery(id);
         var project = await _mediator.Send(query);
 
         if (project is null) return NotFound("Project not found");
@@ -43,11 +46,20 @@ public class ProjectsController : ControllerBase
         return Ok(project);
     }
 
+    [HttpGet("{id}/comments")]
+    public async Task<ActionResult<ProjectCommentsViewModel>> GetProjectComments(int id)
+    {
+        var query = new GetProjectCommentsQuery(id);
+        var result = await _mediator.Send(query);
+
+        return result is not null ? Ok(result) : NotFound("Project not found.");
+    }
+
     [HttpPost]
     public async Task<ActionResult> Post([FromBody] CreateProjectCommand command)
     {
-        var id = await _mediator.Send(command);
-        return CreatedAtAction(nameof(GetById), new { Id = id }, command);
+        var result = await _mediator.Send(command);
+        return CreatedAtAction(nameof(Get), new { v = "2.0", id = result }, command);
     }
 
     [HttpPost("{id}/comments")]

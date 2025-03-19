@@ -1,4 +1,6 @@
-﻿namespace DevFreela.Core.Entities;
+﻿using System.Text.Json.Serialization;
+
+namespace DevFreela.Core.Entities;
 
 public class User : BaseEntity
 {
@@ -25,6 +27,13 @@ public class User : BaseEntity
     public List<UserSkill> UserSkills { get; private set; }
     public List<Project> OwnedProjects { get; private set; }
     public List<Project> FreelanceProjects { get; private set; }
-
     public List<ProjectComment> Comments { get; private set; }
+
+    public void AddSkill(Skill skill)
+    {
+        if (UserSkills.Any(s => s.IdSkill == skill.Id))
+            throw new InvalidOperationException("Skill already added.");
+
+        UserSkills.Add(new UserSkill(Id, skill.Id));
+    }
 }
