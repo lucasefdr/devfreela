@@ -1,4 +1,4 @@
-﻿using DevFreela.Application.Commands.UserCommands.AddSkillToUser;
+﻿using DevFreela.Application.Features.Commands.UserCommands.AddSkillToUser;
 using FluentValidation;
 
 namespace DevFreela.Application.Validators.User;

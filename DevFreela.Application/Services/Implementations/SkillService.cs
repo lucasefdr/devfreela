@@ -1,26 +1,50 @@
-﻿using DevFreela.Application.Services.Interfaces;
-using DevFreela.Application.ViewModels.Skill;
-using DevFreela.Infrastructure.Persistence;
+﻿using DevFreela.Application.Common;
+using DevFreela.Application.DTOs.InputModels.Skill;
+using DevFreela.Application.DTOs.ViewModels.Skill;
+using DevFreela.Application.DTOs.ViewModels.User;
+using DevFreela.Application.Repositories;
+using DevFreela.Application.Services.Interfaces;
+using DevFreela.Core.Entities;
 
 namespace DevFreela.Application.Services.Implementations;
 
-public class SkillService : ISkillService
+public class SkillService(ISkillRepository skillRepository) : ISkillService
 {
-    private readonly DevFreelaDbContext _context;
-
-    public SkillService(DevFreelaDbContext context)
+    #region CREATE
+    public async Task<int> Create(SkillInputModel model)
     {
-        _context = context;
+        var newSkill = new Skill(model.Description);
+        await skillRepository.CreateAsync(newSkill);
+        await skillRepository.CommitAsync();
+
+        return newSkill.ID;
+    }
+    #endregion
+
+    #region READ
+    public async Task<PagedResult<SkillViewModel>> GetAll(QueryParameters parameters)
+    {
+        var skillsPaged = await skillRepository.GetAllAsync(parameters);
+
+        var skillsPagedResponse = new PagedResult<SkillViewModel>()
+        {
+            CurrentPage = skillsPaged.CurrentPage,
+            PageSize = skillsPaged.PageSize,
+            TotalCount = skillsPaged.TotalCount,
+            TotalPages = skillsPaged.TotalPages,
+            Items = [.. skillsPaged.Items.Select(s => new SkillViewModel(s.ID, s.Description))]
+        };
+
+        return skillsPagedResponse;
     }
 
-    public List<SkillViewModel> GetAll()
+    public async Task<SkillViewModel?> GetByID(int id)
     {
-        var skills = _context.Skills;
+        var skill = await skillRepository.FindAsync(id);
 
-        var skillViewModel = skills
-            .Select(s => new SkillViewModel(s.Id, s.Description))
-            .ToList();
+        if (skill == null) return null;
 
-        return skillViewModel;
+        return new SkillViewModel(skill.ID, skill.Description);
     }
+    #endregion
 }

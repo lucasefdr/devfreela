@@ -1,106 +1,85 @@
 ﻿using Asp.Versioning;
-using DevFreela.API.Configurations;
-using DevFreela.API.Models;
-using DevFreela.Application.InputModels.Project;
+using DevFreela.API.Extensions;
+using DevFreela.Application.Common;
+using DevFreela.Application.DTOs.InputModels.Project;
+using DevFreela.Application.DTOs.ViewModels.Project;
+using DevFreela.Application.Services.Implementations;
 using DevFreela.Application.Services.Interfaces;
+using DevFreela.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace DevFreela.API.Controllers.v1;
 
 [ApiVersion("1.0")]
 [Route("api/v{v:apiVersion}/[controller]")]
 [ApiController]
-public class ProjectsController : ControllerBase
+public class ProjectsController(IProjectService projectService) : ControllerBase
 {
-    private readonly OpeningTimeOption _option;
-    private readonly IProjectService _projectService;
-
-    public ProjectsController(IOptions<OpeningTimeOption> option, IProjectService projectService)
-    {
-        _option = option.Value;
-        _projectService = projectService;
-    }
-
-    // api/projects?query=myQuery
+    #region GET
     [HttpGet]
-    public IActionResult Get(string query)
+    public async Task<ActionResult<PagedResult<Project>>> GetAll([FromQuery] QueryParameters parameters)
     {
-        var projects = _projectService.GetAll(query);
-        return Ok(projects);
+        var result = await projectService.GetAll(parameters);
+        Response.AddPaginationHeaders(result);
+
+        return Ok(result);
     }
 
-    // api/projects/{id}
-    [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<ProjectDetailsViewModel>> GetByID(int id)
     {
-        var project = _projectService.GetById(id);
-
-        return project is not null ? Ok(project) : NotFound("Project not found");
+        var project = await projectService.GetByID(id);
+        return project != null ? Ok(project) : NotFound("User not found");
     }
+    #endregion
 
-    // api/projects
+    #region POST
     [HttpPost]
-    public IActionResult Post([FromBody] CreateProjectInputModel model)
+    public async Task<ActionResult> Post(CreateProjectInputModel model)
     {
-        var newId = _projectService.Create(model);
-
-        // CreatedAtAction(methodName, anonObjWithParam, newObj)
-        return CreatedAtAction(nameof(GetById), new { id = newId }, model);
+        var newId = await projectService.Create(model);
+        return CreatedAtAction(nameof(GetByID), new { v = "1", id = newId }, model);
     }
 
-    // api/projects/{id}
-    [HttpPut("{id}")]
-    public IActionResult Put(int id, [FromBody] UpdateProjectInputModel model)
+    [HttpPost("{id:int}/comments")]
+    public async Task<ActionResult> PostComment(int id, CreateCommentInputModel model)
     {
-        if (id != model.Id)
-        {
+        if (id != model.ProjectID)
             return BadRequest();
-        }
 
-        _projectService.Update(model);
+        await projectService.CreateComment(model);
+        return NoContent();
+    }
+    #endregion
 
+    #region PUT
+    [HttpPut("{id:int}/start")]
+    public async Task<ActionResult> Start(int id)
+    {
+        await projectService.Start(id);
         return NoContent();
     }
 
-    // api/projects/{id}
-    [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    [HttpPut("{id:int}/finish")]
+    public async Task<ActionResult> Finish(int id)
     {
-        _projectService.Delete(id);
-
+        await projectService.Finish(id);
         return NoContent();
     }
 
-    // api/projects/{id}/comments
-    [HttpPost("{id}/comments")]
-    public IActionResult PostComment(int id, [FromBody] CreateCommentInputModel model)
+    [HttpPut("{id:int}/cancel")]
+    public async Task<ActionResult> Cancel(int id)
     {
-        _projectService.CreateComment(model);
-
+        await projectService.Cancel(id);
         return NoContent();
     }
 
-    // api/projects/{id}/start
-    [HttpPut("{id}/start")]
-    public IActionResult Start(int id)
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult> Update(int id, UpdateProjectInputModel model)
     {
-        _projectService.Start(id);
+        await projectService.Update(id, model);
         return NoContent();
     }
-
-    // api/projects/{id}/finish
-    [HttpPut("{id}/finish")]
-    public IActionResult Finish(int id)
-    {
-        _projectService.Finish(id);
-        return NoContent();
-    }
-
-    [HttpGet("openingTimeOption")]
-    public IActionResult GetOpeningTimeOption()
-    {
-        return Ok($"Start at: {_option.StartAt} - End at: {_option.EndAt}");
-    }
+    #endregion
 
 }

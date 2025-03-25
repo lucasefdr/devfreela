@@ -1,8 +1,8 @@
 ﻿using Asp.Versioning;
-using DevFreela.Application.Commands.UserCommands.AddSkillToUser;
-using DevFreela.Application.Commands.UserCommands.CreateUser;
-using DevFreela.Application.Queries.UserQueries.GetUser;
-using DevFreela.Application.ViewModels.User;
+using DevFreela.Application.DTOs.ViewModels.User;
+using DevFreela.Application.Features.Commands.UserCommands.AddSkillToUser;
+using DevFreela.Application.Features.Commands.UserCommands.CreateUser;
+using DevFreela.Application.Features.Queries.UserQueries.GetUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

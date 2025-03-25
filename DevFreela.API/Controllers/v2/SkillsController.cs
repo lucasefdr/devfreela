@@ -1,8 +1,8 @@
 ﻿using Asp.Versioning;
-using DevFreela.Application.Commands.SkillCommands;
-using DevFreela.Application.Queries.SkillQueries.GetSkill;
-using DevFreela.Application.Queries.SkillQueries.GetSkills;
-using DevFreela.Application.ViewModels.Skill;
+using DevFreela.Application.DTOs.ViewModels.Skill;
+using DevFreela.Application.Features.Commands.SkillCommands;
+using DevFreela.Application.Features.Queries.SkillQueries.GetSkill;
+using DevFreela.Application.Features.Queries.SkillQueries.GetSkills;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,30 +1,79 @@
-﻿using DevFreela.Core.Entities;
-using DevFreela.Core.Repositories;
+﻿using DevFreela.Application.Common;
+using DevFreela.Application.Repositories;
+using DevFreela.Core.Entities;
+using DevFreela.Core.Enums;
+using DevFreela.Infrastructure.Persistence.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Infrastructure.Persistence.Repositories;
 
 public class UserRepository(IRepository<User> repository) : IUserRepository
 {
-    private readonly IRepository<User> _repository = repository;
+    #region READ
+    public async Task<PagedResult<User>> GetFreelancersAsync(QueryParameters parameters)
+    {
+        string[] searchableProperties = ["FullName"];
+
+        var query = repository.GetAll()
+                              .Where(u => u.UserType == UserTypeEnum.FREELANCER);
+
+        query = query.ApplyQueryParameters(parameters, searchableProperties);
+        query = query.Include(u => u.UserSkills).ThenInclude(s => s.Skill);
+
+        return await query.ToPagedResultAsync(parameters);
+    }
+
+    public async Task<PagedResult<User>> GetClientsAsync(QueryParameters parameters)
+    {
+        string[] searchableProperties = ["FullName"];
+
+        var query = repository.GetAll()
+                              .Where(u => u.UserType == UserTypeEnum.CLIENT);
+
+        query = query.ApplyQueryParameters(parameters, searchableProperties);
+        query = query.Include(u => u.UserSkills).ThenInclude(s => s.Skill);
+
+        return await query.ToPagedResultAsync(parameters);
+    }
+
 
     public IQueryable<User> Get()
     {
-        return _repository.Get();
+        return repository.GetAll();
     }
 
-    public async Task<User> CreateAsync(User entity)
+    public async Task<User?> GetUserWithSkillsAsync(int id)
     {
-        await _repository.CreateAsync(entity);
-        return entity;
+        return await repository.GetAll()
+                                .Include(u => u.UserSkills)
+                                    .ThenInclude(s => s.Skill)
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(u => u.ID == id);
+
     }
 
     public async Task<User?> FindAsync(int id)
     {
-        return await _repository.FindAsync(id);
+        return await repository.GetAll()
+                               .Include(u => u.UserSkills)
+                               .ThenInclude(s => s.Skill)
+                               .FirstOrDefaultAsync(u => u.ID == id);
     }
+    #endregion
+
+    #region CREATE
+    public async Task<User> CreateAsync(User entity)
+    {
+        await repository.CreateAsync(entity);
+        return entity;
+    }
+    #endregion
+
 
     public async Task CommitAsync()
     {
-        await _repository.CommitAsync();
+        await repository.CommitAsync();
     }
+
+
 }

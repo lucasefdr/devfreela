@@ -1,4 +1,4 @@
-﻿using DevFreela.Application.Commands.SkillCommands;
+﻿using DevFreela.Application.Features.Commands.SkillCommands;
 using FluentValidation;
 
 namespace DevFreela.Application.Validators.Skill;

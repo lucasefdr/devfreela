@@ -1,49 +1,46 @@
-﻿using DevFreela.Core.Repositories;
-using System.Linq.Expressions;
-using System;
-using DevFreela.Core.Entities;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using DevFreela.Core.Common;
+using DevFreela.Application.Repositories;
 
 namespace DevFreela.Infrastructure.Persistence.Repositories;
 
 public class Repository<TEntity>(DevFreelaDbContext context) : IRepository<TEntity> where TEntity : BaseEntity
 {
     protected readonly DevFreelaDbContext _context = context;
+    protected readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
-
-    public IQueryable<TEntity> Get()
+    public IQueryable<TEntity> GetAll()
     {
-        return _context.Set<TEntity>();
+        return _dbSet.AsNoTracking();
     }
 
     public async Task<TEntity?> FindAsync(int id)
     {
-        return await _context.Set<TEntity>().FindAsync(id);
+        return await _dbSet.FindAsync(id);
     }
 
     public async Task<TEntity?> GetByAsync(Expression<Func<TEntity, bool>> expression)
     {
-        return await _context.Set<TEntity>().FirstOrDefaultAsync(expression);
+        return await _dbSet.FirstOrDefaultAsync(expression);
     }
 
     public async Task<TEntity> CreateAsync(TEntity entity)
     {
-        await _context.Set<TEntity>().AddAsync(entity);
-        await _context.SaveChangesAsync();
-
+        await _dbSet.AddAsync(entity);
         return entity;
     }
 
-    public async Task UpdateAsync(TEntity entity)
+    public Task UpdateAsync(TEntity entity)
     {
-        _context.Set<TEntity>().Update(entity);
-        await _context.SaveChangesAsync();
+        _dbSet.Update(entity);
+        return Task.CompletedTask;
     }
 
-    public async Task DeleteAsync(TEntity entity)
+    public Task DeleteAsync(TEntity entity)
     {
-        _context.Remove(entity);
-        await _context.SaveChangesAsync();
+        _dbSet.Remove(entity);
+        return Task.CompletedTask;
     }
 
     public async Task CommitAsync() => await _context.SaveChangesAsync();

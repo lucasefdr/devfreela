@@ -1,4 +1,4 @@
-﻿using DevFreela.Application.Commands.ProjectCommands.CreateComment;
+﻿using DevFreela.Application.Features.Commands.ProjectCommands.CreateComment;
 using FluentValidation;
 
 namespace DevFreela.Application.Validators.Project;

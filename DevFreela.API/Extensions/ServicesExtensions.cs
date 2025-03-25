@@ -1,10 +1,10 @@
 ﻿using Asp.Versioning;
 using DevFreela.API.Configurations;
-using DevFreela.Application.Commands.ProjectCommands.CreateProject;
+using DevFreela.Application.Features.Commands.ProjectCommands.CreateProject;
+using DevFreela.Application.Repositories;
 using DevFreela.Application.Services.Implementations;
 using DevFreela.Application.Services.Interfaces;
 using DevFreela.Application.Validators.Project;
-using DevFreela.Core.Repositories;
 using DevFreela.Infrastructure.Persistence.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -46,7 +46,8 @@ public static class ServicesExtensions
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>))
                 .AddScoped<IProjectRepository, ProjectRepository>()
                 .AddScoped<IUserRepository, UserRepository>()
-                .AddScoped<ISkillRepository, SkillRepository>();
+                .AddScoped<ISkillRepository, SkillRepository>()
+                .AddScoped<ICommentRepository, CommentRepository>();
 
         services.AddScoped<IProjectService, ProjectService>()
                 .AddScoped<IUserService, UserService>()

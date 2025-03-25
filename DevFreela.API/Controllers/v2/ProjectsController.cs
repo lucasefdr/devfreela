@@ -1,14 +1,14 @@
 ﻿using Asp.Versioning;
-using DevFreela.Application.Commands.ProjectCommands.CancelProject;
-using DevFreela.Application.Commands.ProjectCommands.CreateComment;
-using DevFreela.Application.Commands.ProjectCommands.CreateProject;
-using DevFreela.Application.Commands.ProjectCommands.FinishProject;
-using DevFreela.Application.Commands.ProjectCommands.StartProject;
-using DevFreela.Application.Commands.ProjectCommands.UpdateProject;
-using DevFreela.Application.Queries.ProjectQueries.GetAllProjects;
-using DevFreela.Application.Queries.ProjectQueries.GetProject;
-using DevFreela.Application.Queries.ProjectQueries.GetProjectComments;
-using DevFreela.Application.ViewModels.Project;
+using DevFreela.Application.DTOs.ViewModels.Project;
+using DevFreela.Application.Features.Commands.ProjectCommands.CancelProject;
+using DevFreela.Application.Features.Commands.ProjectCommands.CreateComment;
+using DevFreela.Application.Features.Commands.ProjectCommands.CreateProject;
+using DevFreela.Application.Features.Commands.ProjectCommands.FinishProject;
+using DevFreela.Application.Features.Commands.ProjectCommands.StartProject;
+using DevFreela.Application.Features.Commands.ProjectCommands.UpdateProject;
+using DevFreela.Application.Features.Queries.ProjectQueries.GetAllProjects;
+using DevFreela.Application.Features.Queries.ProjectQueries.GetProject;
+using DevFreela.Application.Features.Queries.ProjectQueries.GetProjectComments;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

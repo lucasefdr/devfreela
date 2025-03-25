@@ -1,16 +1,18 @@
-﻿using DevFreela.Application.InputModels.Project;
-using DevFreela.Application.ViewModels.Project;
+﻿using DevFreela.Application.Common;
+using DevFreela.Application.DTOs.InputModels.Project;
+using DevFreela.Application.DTOs.ViewModels.Project;
+using DevFreela.Core.Entities;
 
 namespace DevFreela.Application.Services.Interfaces;
 
 public interface IProjectService
 {
-    List<ProjectViewModel> GetAll(string query);
-    ProjectDetailsViewModel? GetById(int id);
-    int Create(CreateProjectInputModel inputModel);
-    void Update(UpdateProjectInputModel inputModel);
-    void Delete(int id);
-    void CreateComment(CreateCommentInputModel inputModel);
-    void Start(int id);
-    void Finish(int id);
+    Task<PagedResult<ProjectViewModel>> GetAll(QueryParameters parameters);
+    Task<ProjectDetailsViewModel?> GetByID(int id);
+    Task<int> Create(CreateProjectInputModel model);
+    Task CreateComment(CreateCommentInputModel model);
+    Task Start(int projectID);
+    Task Finish(int projectID);
+    Task Cancel(int projectID);
+    Task Update(int projectID, UpdateProjectInputModel model);
 }

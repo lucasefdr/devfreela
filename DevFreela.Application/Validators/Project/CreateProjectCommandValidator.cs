@@ -1,5 +1,4 @@
-﻿using DevFreela.Application.Commands.ProjectCommands.CreateProject;
-using DevFreela.Application.InputModels.Project;
+﻿using DevFreela.Application.Features.Commands.ProjectCommands.CreateProject;
 using FluentValidation;
 
 namespace DevFreela.Application.Validators.Project;

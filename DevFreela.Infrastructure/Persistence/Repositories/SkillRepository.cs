@@ -1,27 +1,41 @@
-﻿using DevFreela.Core.Entities;
-using DevFreela.Core.Repositories;
+﻿using DevFreela.Application.Common;
+using DevFreela.Application.Repositories;
+using DevFreela.Core.Entities;
+using DevFreela.Infrastructure.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Infrastructure.Persistence.Repositories;
 
 public class SkillRepository(IRepository<Skill> repository) : ISkillRepository
 {
-    private readonly IRepository<Skill> _repository = repository;
-
+    #region CREATE
     public async Task<Skill> CreateAsync(Skill entity)
     {
-        await _repository.CreateAsync(entity);
+        await repository.CreateAsync(entity);
         return entity;
     }
+    #endregion
 
+    #region READ
     public async Task<Skill?> FindAsync(int id)
     {
-        var skill = await _repository.FindAsync(id);
+        var skill = await repository.FindAsync(id);
         return skill;
     }
 
-    public IQueryable<Skill> Get()
+    public async Task<PagedResult<Skill>> GetAllAsync(QueryParameters parameters)
     {
-        return _repository.Get().AsNoTracking();
+        string[] searchableProperties = ["Description"];
+
+        var query = repository.GetAll();
+        query = query.ApplyQueryParameters(parameters, searchableProperties);
+
+        return await query.ToPagedResultAsync(parameters);
+    }
+    #endregion
+
+    public async Task CommitAsync()
+    {
+        await repository.CommitAsync();
     }
 }

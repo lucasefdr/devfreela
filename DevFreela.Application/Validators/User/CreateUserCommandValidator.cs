@@ -1,4 +1,4 @@
-﻿using DevFreela.Application.Commands.UserCommands.CreateUser;
+﻿using DevFreela.Application.Features.Commands.UserCommands.CreateUser;
 using FluentValidation;
 
 namespace DevFreela.Application.Validators.User;
