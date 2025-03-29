@@ -9,7 +9,7 @@ public interface IUserRepository
     Task<PagedResult<User>> GetClientsAsync(QueryParameters parameters);
 
 
-    IQueryable<User> Get();
+    Task<User?>  Get(int id);
     Task<User?> FindAsync(int id);
     Task<User?> GetUserWithSkillsAsync(int id);
     Task<User> CreateAsync(User entity);

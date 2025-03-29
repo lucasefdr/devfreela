@@ -10,12 +10,13 @@ namespace DevFreela.Infrastructure.Persistence.Repositories;
 public class UserRepository(IRepository<User> repository) : IUserRepository
 {
     #region READ
+
     public async Task<PagedResult<User>> GetFreelancersAsync(QueryParameters parameters)
     {
         string[] searchableProperties = ["FullName"];
 
         var query = repository.GetAll()
-                              .Where(u => u.UserType == UserTypeEnum.FREELANCER);
+            .Where(u => u.UserType == UserTypeEnum.FREELANCER);
 
         query = query.ApplyQueryParameters(parameters, searchableProperties);
         query = query.Include(u => u.UserSkills).ThenInclude(s => s.Skill);
@@ -28,7 +29,7 @@ public class UserRepository(IRepository<User> repository) : IUserRepository
         string[] searchableProperties = ["FullName"];
 
         var query = repository.GetAll()
-                              .Where(u => u.UserType == UserTypeEnum.CLIENT);
+            .Where(u => u.UserType == UserTypeEnum.CLIENT);
 
         query = query.ApplyQueryParameters(parameters, searchableProperties);
         query = query.Include(u => u.UserSkills).ThenInclude(s => s.Skill);
@@ -37,36 +38,37 @@ public class UserRepository(IRepository<User> repository) : IUserRepository
     }
 
 
-    public IQueryable<User> Get()
+    public async Task<User?> Get(int id)
     {
-        return repository.GetAll();
+        return await repository.GetAll()
+            .Include(u => u.UserSkills)
+            .FirstOrDefaultAsync(u => u.Id == id);
     }
 
     public async Task<User?> GetUserWithSkillsAsync(int id)
     {
         return await repository.GetAll()
-                                .Include(u => u.UserSkills)
-                                    .ThenInclude(s => s.Skill)
-                                .AsNoTracking()
-                                .FirstOrDefaultAsync(u => u.ID == id);
-
+            .Include(u => u.UserSkills)
+            .ThenInclude(s => s.Skill)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == id);
     }
 
     public async Task<User?> FindAsync(int id)
     {
-        return await repository.GetAll()
-                               .Include(u => u.UserSkills)
-                               .ThenInclude(s => s.Skill)
-                               .FirstOrDefaultAsync(u => u.ID == id);
+        return await repository.FindAsync(id);
     }
+
     #endregion
 
     #region CREATE
+
     public async Task<User> CreateAsync(User entity)
     {
         await repository.CreateAsync(entity);
         return entity;
     }
+
     #endregion
 
 
@@ -74,6 +76,4 @@ public class UserRepository(IRepository<User> repository) : IUserRepository
     {
         await repository.CommitAsync();
     }
-
-
 }

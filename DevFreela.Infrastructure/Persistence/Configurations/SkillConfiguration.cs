@@ -8,7 +8,7 @@ public class SkillConfiguration : IEntityTypeConfiguration<Skill>
 {
     public void Configure(EntityTypeBuilder<Skill> builder)
     {
-        builder.HasKey(s => s.ID);
+        builder.HasKey(s => s.Id);
 
         builder.Property(s => s.Description)
             .IsRequired()

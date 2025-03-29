@@ -14,6 +14,6 @@ public class CreateUserCommandHandler(IUserRepository userRepository) : IRequest
 
         await _userRepository.CreateAsync(user);
 
-        return user.ID;
+        return user.Id;
     }
 }

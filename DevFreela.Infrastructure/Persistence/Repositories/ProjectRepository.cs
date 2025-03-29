@@ -16,7 +16,7 @@ public class ProjectRepository(IRepository<Project> repository) : IProjectReposi
                           .AsNoTracking()
                           .Include(p => p.Comments)
                             .ThenInclude(c => c.User)
-                           .FirstOrDefaultAsync(p => p.ID == id, cancellationToken);
+                           .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<Project>> GetAll()
@@ -39,7 +39,7 @@ public class ProjectRepository(IRepository<Project> repository) : IProjectReposi
         var project = await repository.GetAll()
                                         .Include(p => p.Client)
                                         .Include(p => p.Freelancer)
-                                        .FirstOrDefaultAsync(p => p.ID == id);
+                                        .FirstOrDefaultAsync(p => p.Id == id);
 
         return project;
     }

@@ -6,11 +6,11 @@ namespace DevFreela.Core.Entities;
 public class ProjectComment : BaseEntity
 {
     #region Construtores
-    public ProjectComment(string content, int projectID, int userID)
+    public ProjectComment(string content, int projectId, int userId)
     {
         Content = content;
-        ProjectID = projectID;
-        UserID = userID;
+        ProjectId = projectId;
+        UserId = userId;
 
         CreatedAt = DateTime.Now;
     }
@@ -18,8 +18,8 @@ public class ProjectComment : BaseEntity
 
     #region Propriedades
     public string Content { get; private set; }
-    public int ProjectID { get; private set; }
-    public int UserID { get; private set; }
+    public int ProjectId { get; private set; }
+    public int UserId { get; private set; }
     public DateTime CreatedAt { get; private set; }
     #endregion
 

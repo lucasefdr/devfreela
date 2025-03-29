@@ -18,6 +18,6 @@ public class GetProjectCommentsQueryHandler(IProjectRepository projectRepository
             .ToList()
             .AsReadOnly();
 
-        return new ProjectCommentsViewModel(project.ID, project.Title, commentsViewModel);
+        return new ProjectCommentsViewModel(project.Id, project.Title, commentsViewModel);
     }
 }

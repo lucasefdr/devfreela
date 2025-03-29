@@ -1,11 +1,11 @@
-﻿using DevFreela.Application.Features.Commands.UserCommands.CreateUser;
+using DevFreela.Application.DTOs.InputModels.User;
 using FluentValidation;
 
 namespace DevFreela.Application.Validators.User;
 
-public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
+public class CreateUserInputModelValidator : AbstractValidator<CreateUserInputModel>
 {
-    public CreateUserCommandValidator()
+    public CreateUserInputModelValidator()
     {
         // string FullName, string Password, string Email, DateOnly BirthDate
         RuleFor(u => u.FullName)
@@ -30,5 +30,6 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
             .Must(_isUnderAge).WithMessage("The user must be at least 18 years old");
     }
 
+    // Função para validar se o usuário é maior de idade
     private readonly Func<DateTime, bool> _isUnderAge = birthDate => birthDate <= DateTime.Now.AddYears(-18);
 }

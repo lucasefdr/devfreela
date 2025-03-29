@@ -14,6 +14,6 @@ public class CreateSkillCommandHandler(ISkillRepository skillRepository) : IRequ
 
         await _skillRepository.CreateAsync(skill);
 
-        return skill.ID;
+        return skill.Id;
     }
 }

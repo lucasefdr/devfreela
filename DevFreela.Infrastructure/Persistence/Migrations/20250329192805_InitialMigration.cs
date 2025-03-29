@@ -19,7 +19,7 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 name: "Skills",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Description = table.Column<string>(type: "varchar(25)", maxLength: 25, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -27,7 +27,7 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Skills", x => x.ID);
+                    table.PrimaryKey("PK_Skills", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -35,7 +35,7 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FullName = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -49,7 +49,7 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.ID);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -57,7 +57,7 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 name: "Projects",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Title = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -75,18 +75,18 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Projects", x => x.ID);
+                    table.PrimaryKey("PK_Projects", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Projects_Users_ClientID",
                         column: x => x.ClientID,
                         principalTable: "Users",
-                        principalColumn: "ID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Projects_Users_FreelancerID",
                         column: x => x.FreelancerID,
                         principalTable: "Users",
-                        principalColumn: "ID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -95,23 +95,23 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 name: "UserSkills",
                 columns: table => new
                 {
-                    IdUser = table.Column<int>(type: "int", nullable: false),
-                    IdSkill = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    SkillId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserSkills", x => new { x.IdUser, x.IdSkill });
+                    table.PrimaryKey("PK_UserSkills", x => new { x.UserId, x.SkillId });
                     table.ForeignKey(
-                        name: "FK_UserSkills_Skills_IdSkill",
-                        column: x => x.IdSkill,
+                        name: "FK_UserSkills_Skills_SkillId",
+                        column: x => x.SkillId,
                         principalTable: "Skills",
-                        principalColumn: "ID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserSkills_Users_IdUser",
-                        column: x => x.IdUser,
+                        name: "FK_UserSkills_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "ID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -120,41 +120,41 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 name: "Comments",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Content = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProjectID = table.Column<int>(type: "int", nullable: false),
-                    UserID = table.Column<int>(type: "int", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Comments", x => x.ID);
+                    table.PrimaryKey("PK_Comments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Comments_Projects_ProjectID",
-                        column: x => x.ProjectID,
+                        name: "FK_Comments_Projects_ProjectId",
+                        column: x => x.ProjectId,
                         principalTable: "Projects",
-                        principalColumn: "ID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Comments_Users_UserID",
-                        column: x => x.UserID,
+                        name: "FK_Comments_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "ID",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_ProjectID",
+                name: "IX_Comments_ProjectId",
                 table: "Comments",
-                column: "ProjectID");
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_UserID",
+                name: "IX_Comments_UserId",
                 table: "Comments",
-                column: "UserID");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_ClientID",
@@ -167,9 +167,9 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 column: "FreelancerID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserSkills_IdSkill",
+                name: "IX_UserSkills_SkillId",
                 table: "UserSkills",
-                column: "IdSkill");
+                column: "SkillId");
         }
 
         /// <inheritdoc />

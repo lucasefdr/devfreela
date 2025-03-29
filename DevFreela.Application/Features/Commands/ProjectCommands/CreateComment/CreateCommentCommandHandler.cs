@@ -10,7 +10,7 @@ public class CreateCommentCommandHandler(IProjectRepository projectRepository) :
 
     public async Task Handle(CreateCommentCommand request, CancellationToken cancellationToken)
     {
-        //var comment = new ProjectComment(request.Content, request.IdProject, request.IdUser);
+        //var comment = new ProjectComment(request.Content, request.IdProject, request.UserId);
         //await projectRepository..AddAsync(comment, cancellationToken);
         //await projectRepository.CommitAsync(cancellationToken);
     }

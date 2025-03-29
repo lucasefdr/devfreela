@@ -12,7 +12,7 @@ public class Repository<TEntity>(DevFreelaDbContext context) : IRepository<TEnti
 
     public IQueryable<TEntity> GetAll()
     {
-        return _dbSet.AsNoTracking();
+        return _dbSet;
     }
 
     public async Task<TEntity?> FindAsync(int id)

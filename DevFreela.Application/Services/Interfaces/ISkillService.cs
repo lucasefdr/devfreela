@@ -7,6 +7,6 @@ namespace DevFreela.Application.Services.Interfaces;
 public interface ISkillService
 {
     Task<PagedResult<SkillViewModel>> GetAll(QueryParameters parameters);
-    Task<SkillViewModel?> GetByID(int id);
+    Task<SkillViewModel?> GetById(int id);
     Task<int> Create(SkillInputModel model);
 }

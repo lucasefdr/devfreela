@@ -2,16 +2,16 @@ using DevFreela.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddApplicationServicesConfiguration(builder.Configuration); // Services e injeção de dependência
+builder.Services.AddApplicationServicesConfiguration(builder.Configuration); // Services e injeÃ§Ã£o de dependÃªncia
 builder.Services.AddDatabaseConfiguration(builder.Configuration); // Banco de dados
-builder.Services.AddValidationsConfiguration(); // Validações
+builder.Services.AddValidationsConfiguration(); // ValidaÃ§Ãµes
 builder.Services.AddMediatRConfiguration(); // MediatR
 builder.Services.AddRoutesConfiguration(); // Rotas
 builder.Services.AddVersioningConfiguration(); // Versionamento
-builder.Services.AddSwaggerConfiguration(); // Documentação Swagger
+builder.Services.AddSwaggerConfiguration(); // DocumentaÃ§Ã£o Swagger
 
 var app = builder.Build();
 
-app.AddApplicationBuilderConfigurations(); // Aplicação
+app.AddApplicationBuilderConfigurations(); // Aplicaï¿½ï¿½o
 
 app.Run();

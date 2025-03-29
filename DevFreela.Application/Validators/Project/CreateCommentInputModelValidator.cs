@@ -1,11 +1,11 @@
-﻿using DevFreela.Application.Features.Commands.ProjectCommands.CreateComment;
+using DevFreela.Application.DTOs.InputModels.Project;
 using FluentValidation;
 
 namespace DevFreela.Application.Validators.Project;
 
-public class CreateCommentCommandValidator : AbstractValidator<CreateCommentCommand>
+public class CreateCommentInputModelValidator : AbstractValidator<CreateCommentInputModel>
 {
-    public CreateCommentCommandValidator()
+    public CreateCommentInputModelValidator()
     {
         RuleFor(c => c.Content)
             .NotEmpty().WithMessage("{PropertyName} is required.}")
@@ -18,5 +18,5 @@ public class CreateCommentCommandValidator : AbstractValidator<CreateCommentComm
         RuleFor(c => c.UserId)
             .NotEmpty().WithMessage("{PropertyName} is required.")
             .GreaterThan(0).WithMessage("{PropertyName} must be greater than zero.");   
-    }
+    }   
 }

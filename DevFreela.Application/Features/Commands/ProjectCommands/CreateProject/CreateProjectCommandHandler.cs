@@ -15,11 +15,11 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 
     public async Task<int> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
-        var project = new Project(request.Title, request.Description, request.IdClient, request.IdFreelancer, request.TotalCost);
+        var project = new Project(request.Title, request.Description, request.ClientId, request.FreelancerId, request.TotalCost);
 
         await _projectRepository.CreateAsync(project);
         await _projectRepository.CommitAsync();
 
-        return project.ID;
+        return project.Id;
     }
 }

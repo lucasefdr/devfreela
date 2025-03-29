@@ -6,86 +6,140 @@ using DevFreela.Application.Services.Interfaces;
 using DevFreela.Core.Entities;
 using DevFreela.Core.Enums;
 using System.Reflection;
+using DevFreela.Core.Common;
 
 namespace DevFreela.Application.Services.Implementations;
 
-public class ProjectService(IProjectRepository projectRepository,
-                            IUserRepository userRepository,
-                            ICommentRepository commentRepository) : IProjectService
+public class ProjectService(
+    IProjectRepository projectRepository,
+    IUserRepository userRepository,
+    ICommentRepository commentRepository) : IProjectService
 {
     #region CREATE
-    public async Task<int> Create(CreateProjectInputModel model)
+
+    public async Task<Result<int>> Create(CreateProjectInputModel model)
     {
-        var client = await userRepository.FindAsync(model.ClientID) ?? throw new KeyNotFoundException("Client not found");
+        var client = await userRepository.FindAsync(model.ClientId);
+        if (client == null)
+            return Result<int>.Failure("Client not found", 404);
 
         if (client.UserType != UserTypeEnum.CLIENT)
-            throw new ArgumentException("User is not a client");
+            return Result<int>.Failure("User is not CLIENT");
 
         if (!client.IsActive)
-            throw new ArgumentException("Client is not active");
+            return Result<int>.Failure("Client is not active");
 
-        var freelancer = await userRepository.FindAsync(model.FreelancerID) ?? throw new KeyNotFoundException("Freelancer not found");
+        var freelancer = await userRepository.FindAsync(model.FreelancerId);
+        if (freelancer == null)
+            return Result<int>.Failure("Freelancer not found", 404);
 
         if (freelancer.UserType != UserTypeEnum.FREELANCER)
-            throw new ArgumentException("User is not a freelancer");
+            return Result<int>.Failure("User is not FREELANCER");
 
         if (!client.IsActive)
-            throw new ArgumentException("Freelancer is not active");
+            return Result<int>.Failure("Freelancer is not active");
 
-        var newProject = new Project(model.Title, model.Description, model.ClientID, model.FreelancerID, model.TotalCost);
+        var newProject = new Project(model.Title, model.Description, model.ClientId, model.FreelancerId,
+            model.TotalCost);
+        
         await projectRepository.CreateAsync(newProject);
         await projectRepository.CommitAsync();
 
-        return newProject.ID;
+        return Result.Success(newProject.Id);
     }
 
-    public async Task CreateComment(CreateCommentInputModel model)
+    public async Task<Result>  CreateComment(CreateCommentInputModel model)
     {
-        var project = await projectRepository.FindAsync(model.ProjectID) ?? throw new KeyNotFoundException("Project not found");
-        var user = await userRepository.FindAsync(model.UserID) ?? throw new KeyNotFoundException("Project not found");
+        var project = await projectRepository.FindAsync(model.ProjectId);
 
-        var comment = new ProjectComment(model.Content, model.ProjectID, model.UserID);
+        if (project == null)
+            return Result.Failure($"Project with ID {model.ProjectId} not found", 400);
+
+        var user = await userRepository.FindAsync(model.UserId);
+        
+        if (user == null)
+            return Result.Failure($"User with ID {model.UserId} not found", 400);
+
+        var comment = new ProjectComment(model.Content, model.ProjectId, model.UserId);
 
         await commentRepository.CreateAsync(comment);
         await commentRepository.CommitAsync();
+        
+        return Result.Success();
     }
+
     #endregion
 
     #region UPDATE
-    public async Task Cancel(int projectID)
-    {
-        var project = await FindProject(projectID) ?? throw new KeyNotFoundException("Project not found");
 
-        project.Cancel();
+    public async Task<Result> Cancel(int projectId)
+    {
+        var project = await FindProject(projectId);
+
+        if (project == null)
+            return Result.Failure("Project not found");
+
+        var result = project.Cancel();
+        
+        if (result.IsFailure)
+            return Result.Failure(result.ErrorMessage, 400);
+        
         await projectRepository.CommitAsync();
+
+        return Result.Success();
     }
 
-    public async Task Start(int projectID)
+    public async Task<Result> Start(int projectId)
     {
-        var project = await FindProject(projectID) ?? throw new KeyNotFoundException("Project not found");
+        var project = await FindProject(projectId);
 
-        project.Start();
+        if (project == null)
+            return Result.Failure("Project not found");
+
+        var result = project.Start();
+        
+        if (result.IsFailure)
+            return Result.Failure(result.ErrorMessage, 400);
+        
         await projectRepository.CommitAsync();
+
+        return Result.Success();
     }
 
-    public async Task Update(int projectID, UpdateProjectInputModel model)
+    public async Task<Result> Update(int projectId, UpdateProjectInputModel model)
     {
-        var project = await FindProject(projectID) ?? throw new KeyNotFoundException("Project not found");
+        var project = await FindProject(projectId);
+        
+        if (project == null)
+            return Result.Failure($"Project with ID {projectId} not found", 400);
 
         project.Update(model.Title, model.Description, model.TotalCost);
         await projectRepository.CommitAsync();
+
+        return Result.Success();
     }
 
-    public async Task Finish(int projectID)
+    public async Task<Result> Finish(int projectId)
     {
-        var project = await FindProject(projectID) ?? throw new KeyNotFoundException("Project not found");
+        var project = await FindProject(projectId);
+        
+        if (project == null)
+            return Result.Failure("Project not found");
 
-        project.Finish();
+        var result = project.Finish();
+        
+        if (result.IsFailure)
+            return Result.Failure(result.ErrorMessage, 400);
+        
         await projectRepository.CommitAsync();
+
+        return Result.Success();
     }
+
     #endregion
 
     #region READ
+
     public async Task<PagedResult<ProjectViewModel>> GetAll(QueryParameters parameters)
     {
         var projects = await projectRepository.GetPaginatedProjectsAsync(parameters);
@@ -96,27 +150,34 @@ public class ProjectService(IProjectRepository projectRepository,
             PageSize = projects.PageSize,
             TotalCount = projects.TotalCount,
             TotalPages = projects.TotalPages,
-            Items = [.. projects.Items.Select(p => new ProjectViewModel(p.ID, p.Title, p.CreatedAt))],
+            Items = [.. projects.Items.Select(p => new ProjectViewModel(p.Id, p.Title, p.CreatedAt))],
         };
 
         return projectsResponse;
     }
 
-    public async Task<ProjectDetailsViewModel?> GetByID(int id)
+    public async Task<Result<ProjectDetailsViewModel>> GetById(int id)
     {
-        var project = await projectRepository.GetWithDetailsAsync(id) ?? throw new KeyNotFoundException("Project not found");
+        var project = await projectRepository.GetWithDetailsAsync(id);
+        
+        if (project == null)
+            return Result.Failure<ProjectDetailsViewModel>($"Project with ID {id} not found", 404);
 
-        return new ProjectDetailsViewModel(project.ID, project.Title, project.TotalCost, project.Description,
-                                           project.StartedAt, project.FinishedAt, project.CancelledAt, project.Status, project.Client!.FullName,
-                                           project.Freelancer!.FullName);
+        var projectModel = new ProjectDetailsViewModel(project.Id, project.Title, project.TotalCost, project.Description,
+            project.StartedAt, project.FinishedAt, project.CancelledAt, project.Status, project.Client!.FullName,
+            project.Freelancer!.FullName);
+        
+        return Result.Success(projectModel);
     }
+
     #endregion
 
     #region Métodos
+
     private async Task<Project?> FindProject(int id)
     {
         return await projectRepository.FindAsync(id);
     }
-    #endregion
 
+    #endregion
 }

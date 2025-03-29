@@ -16,21 +16,21 @@ public class UsersController(IUserService userService) : ControllerBase
 {
     #region GET
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<UserViewModel>> GetByID(int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        var user = await userService.GetByID(id);
-        return user != null ? Ok(user) : NotFound("User not found");
+        var result = await userService.GetById(id);
+        return result.IsFailure ? StatusCode(result.StatusCode, result.ErrorMessage) : Ok(result.Value);
     }
 
     [HttpGet("freelancers")]
-    public async Task<ActionResult<PagedResult<UserViewModel>>> GetAllFreelancers([FromQuery] QueryParameters parameters)
+    public async Task<IActionResult> GetAllFreelancers([FromQuery] QueryParameters parameters)
     {
         var freelancers = await userService.GetAllFreelancers(parameters);
         return Ok(freelancers);
     }
 
     [HttpGet("clients")]
-    public async Task<ActionResult<PagedResult<UserViewModel>>> GetAllClients([FromQuery] QueryParameters parameters)
+    public async Task<IActionResult> GetAllClients([FromQuery] QueryParameters parameters)
     {
         var clients = await userService.GetAllClients(parameters);
         return Ok(clients);
@@ -42,30 +42,30 @@ public class UsersController(IUserService userService) : ControllerBase
     public async Task<ActionResult> Post([FromBody] CreateUserInputModel model)
     {
         var newId = await userService.Create(model);
-        return CreatedAtAction(nameof(GetByID), new { v = "1", id = newId }, model);
+        return CreatedAtAction(nameof(GetById), new { v = "1", id = newId }, model);
     }
     #endregion
 
     #region PUT
-    [HttpPut("{userID:int}/skill/{skillID:int}")]
-    public async Task<ActionResult> AddSkillToUser(int userID, int skillID)
+    [HttpPut("{userId:int}/skill/{skillId:int}")]
+    public async Task<ActionResult> AddSkillToUser(int userId, int skillId)
     {
-        await userService.AddSkillToUser(userID, skillID);
-        return NoContent();
+        var result = await userService.AddSkillToUser(userId, skillId);
+        return result.IsFailure ? StatusCode(result.StatusCode, result.ErrorMessage) : NoContent();
     }
 
-    [HttpPut("{id}/active")]
+    [HttpPut("{id:int}/active")]
     public async Task<ActionResult> ActiveUser(int id)
     {
-        await userService.ActiveUser(id);
-        return NoContent();
+        var result = await userService.ActiveUser(id);
+        return result.IsFailure ? StatusCode(result.StatusCode, result.ErrorMessage) : NoContent();
     }
 
-    [HttpPut("{id}/inactive")]
+    [HttpPut("{id:int}/inactive")]
     public async Task<ActionResult> InactiveUser(int id)
     {
-        await userService.InactiveUser(id);
-        return NoContent();
+        var result = await userService.InactiveUser(id);
+        return result.IsFailure ? StatusCode(result.StatusCode, result.ErrorMessage) : NoContent();
     }
     #endregion
 

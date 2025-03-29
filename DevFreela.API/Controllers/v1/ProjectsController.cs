@@ -16,61 +16,88 @@ namespace DevFreela.API.Controllers.v1;
 public class ProjectsController(IProjectService projectService) : ControllerBase
 {
     #region GET
+
     [HttpGet]
-    public async Task<ActionResult<PagedResult<Project>>> GetAll([FromQuery] QueryParameters parameters)
+    public async Task<IActionResult> GetAll([FromQuery] QueryParameters parameters)
     {
         var result = await projectService.GetAll(parameters);
+        
         Response.AddPaginationHeaders(result);
 
         return Ok(result);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<ProjectDetailsViewModel>> GetByID(int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        var project = await projectService.GetByID(id);
-        return project != null ? Ok(project) : NotFound("User not found");
+        var result = await projectService.GetById(id);
+
+        return result.IsFailure
+            ? NotFound(new { error = result.ErrorMessage })
+            : Ok(result.Value);
     }
+
     #endregion
 
     #region POST
+
     [HttpPost]
     public async Task<ActionResult> Post(CreateProjectInputModel model)
     {
-        var newId = await projectService.Create(model);
-        return CreatedAtAction(nameof(GetByID), new { v = "1", id = newId }, model);
+        var result = await projectService.Create(model);
+
+        return result.IsFailure
+            ? StatusCode(result.StatusCode, new { error = result.ErrorMessage })
+            : CreatedAtAction(nameof(GetById), new { v = "1", id = result.Value }, model);
     }
 
     [HttpPost("{id:int}/comments")]
     public async Task<ActionResult> PostComment(int id, CreateCommentInputModel model)
     {
-        if (id != model.ProjectID)
+        if (id != model.ProjectId)
             return BadRequest();
 
-        await projectService.CreateComment(model);
-        return NoContent();
+        var result = await projectService.CreateComment(model);
+
+        return result.IsFailure
+            ? StatusCode(result.StatusCode, new { error = result.ErrorMessage })
+            : NoContent();
     }
+
     #endregion
 
     #region PUT
+
     [HttpPut("{id:int}/start")]
     public async Task<ActionResult> Start(int id)
     {
-        await projectService.Start(id);
+        var result = await projectService.Start(id);
+
+        if (result.IsFailure)
+            return StatusCode(result.StatusCode, new { error = result.ErrorMessage });
+
         return NoContent();
     }
 
     [HttpPut("{id:int}/finish")]
     public async Task<ActionResult> Finish(int id)
     {
-        await projectService.Finish(id);
+        var result = await projectService.Finish(id);
+
+        if (result.IsFailure)
+            return StatusCode(result.StatusCode, new { error = result.ErrorMessage });
+
         return NoContent();
     }
 
     [HttpPut("{id:int}/cancel")]
     public async Task<ActionResult> Cancel(int id)
     {
-        await projectService.Cancel(id);
+        var result = await projectService.Cancel(id);
+
+        if (result.IsFailure)
+            return StatusCode(result.StatusCode, new { error = result.ErrorMessage });
+
         return NoContent();
     }
 
@@ -80,6 +107,6 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
         await projectService.Update(id, model);
         return NoContent();
     }
-    #endregion
 
+    #endregion
 }

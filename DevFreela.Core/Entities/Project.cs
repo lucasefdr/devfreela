@@ -40,31 +40,38 @@ public class Project : BaseEntity
     #endregion
 
     #region Métodos
-    public void Cancel()
+    public Result Cancel()
     {
-        if (Status == ProjectStatusEnum.InProgress || Status == ProjectStatusEnum.Created)
-        {
-            Status = ProjectStatusEnum.Cancelled;
-            CancelledAt = DateTime.Now;
-        }
+        if (Status != ProjectStatusEnum.InProgress && Status != ProjectStatusEnum.Created)
+            return Result.Failure("Only projects with Created or InProgress status can be canceled.");
+        
+        Status = ProjectStatusEnum.Cancelled;
+        CancelledAt = DateTime.Now;
+        return Result.Success();
     }
 
-    public void Start()
+    public Result Start()
     {
-        if (Status == ProjectStatusEnum.Created)
+        if (Status != ProjectStatusEnum.Created)
         {
-            Status = ProjectStatusEnum.InProgress;
-            StartedAt = DateTime.Now;
+            return Result.Failure("Only projects with Created status can be started.");
         }
+        
+        Status = ProjectStatusEnum.InProgress;
+        StartedAt = DateTime.Now;
+        return Result.Success();    
     }
 
-    public void Finish()
+    public Result Finish()
     {
-        if (Status == ProjectStatusEnum.InProgress)
+        if (Status != ProjectStatusEnum.InProgress)
         {
-            Status = ProjectStatusEnum.Finished;
-            FinishedAt = DateTime.Now;
+            return Result.Failure("Only projects with InProgress status can be finished.");
         }
+        
+        Status = ProjectStatusEnum.Finished;
+        FinishedAt = DateTime.Now;
+        return Result.Success();    
     }
 
     public void Update(string title, string description, decimal totalCost)

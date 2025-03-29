@@ -11,7 +11,7 @@ public class GetAllProjectsQueryHandler(IProjectRepository projectRepository)
     {
         var projects = await projectRepository.GetAll();
 
-        var projectsViewModel = projects.Select(p => new ProjectViewModel(p.ID, p.Title, p.CreatedAt));
+        var projectsViewModel = projects.Select(p => new ProjectViewModel(p.Id, p.Title, p.CreatedAt));
 
         return projectsViewModel;
     }

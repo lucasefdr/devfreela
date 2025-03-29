@@ -20,7 +20,7 @@ public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery, ProjectDe
         if (project is null) return null;
 
         return new ProjectDetailsViewModel(
-            project.ID,
+            project.Id,
             project.Title,
             project.TotalCost,
             project.Description,

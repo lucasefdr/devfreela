@@ -24,7 +24,7 @@ public class SkillsController(ISkillService skillService) : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<SkillViewModel>> GetByID(int id)
     {
-        var skill = await skillService.GetByID(id);
+        var skill = await skillService.GetById(id);
 
         return skill != null ? Ok(skill) : NotFound("Skill not found");
     }

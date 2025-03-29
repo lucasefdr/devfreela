@@ -11,6 +11,6 @@ public class GetSkillQueryHandler(ISkillRepository skillRepository) : IRequestHa
     {
         var skill = await _skillRepository.FindAsync(request.Id);
 
-        return skill is not null ? new SkillViewModel(skill.ID, skill.Description) : null;
+        return skill is not null ? new SkillViewModel(skill.Id, skill.Description) : null;
     }
 }

@@ -15,7 +15,7 @@ public class GetSkillsQueryHandler(ISkillRepository skillRepository)
         var mock = new List<SkillViewModel>();
 
         return mock;
-            //[.. skills.Select(s => new SkillViewModel(s.ID, s.Description))];
+            //[.. skills.Select(s => new SkillViewModel(s.Id, s.Description))];
 
     }
 }

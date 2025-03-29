@@ -7,6 +7,7 @@ namespace DevFreela.Core.Entities;
 public class User : BaseEntity
 {
     #region Construtores
+
     public User(string fullName, string email, DateTime birthDate, UserTypeEnum userType)
     {
         FullName = fullName;
@@ -21,43 +22,56 @@ public class User : BaseEntity
         FreelancerProjects = [];
         Comments = [];
     }
+
     #endregion
 
     #region Propriedades
+
     public string FullName { get; private set; }
     public string Email { get; private set; }
     public DateTime BirthDate { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public bool IsActive { get; private set; }
     public UserTypeEnum UserType { get; private set; }
+
     #endregion
 
     #region Propriedades de navegação
+
     public List<UserSkill> UserSkills { get; private set; }
     public List<Project> OwnedProjects { get; private set; }
     public List<Project> FreelancerProjects { get; private set; }
     public List<ProjectComment> Comments { get; private set; }
+
     #endregion
 
     #region Métodos
-    public void AddSkill(Skill skill)
-    {
-        if (UserSkills.Any(s => s.IdSkill == skill.ID))
-            throw new InvalidOperationException("Skill already added.");
 
-        UserSkills.Add(new UserSkill(ID, skill.ID));
+    public Result AddSkill(Skill skill)
+    {
+        if (UserSkills.Any(s => s.SkillId == skill.Id))
+            return Result.Failure("Skill already added.");
+
+        UserSkills.Add(new UserSkill(Id, skill.Id));
+        return Result.Success();
     }
 
-    public void ActiveUser()
+    public Result ActiveUser()
     {
-        if (!IsActive)
-            IsActive = true;
+        if (IsActive) return Result.Failure("User is already active.");
+
+        IsActive = true;
+        return Result.Success();
     }
 
-    public void InactiveUser()
+
+    public Result InactiveUser()
     {
-        if (IsActive)
-            IsActive = false;
+        if (!IsActive) return Result.Failure("User is not active.");
+
+        IsActive = false;
+        return Result.Success();
     }
+
     #endregion
 }

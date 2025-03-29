@@ -8,7 +8,7 @@ public class ProjectCommentConfiguration : IEntityTypeConfiguration<ProjectComme
 {
     public void Configure(EntityTypeBuilder<ProjectComment> builder)
     {
-        builder.HasKey(pc => pc.ID);
+        builder.HasKey(pc => pc.Id);
 
         builder.Property(pc => pc.Content)
             .IsRequired()
@@ -19,10 +19,10 @@ public class ProjectCommentConfiguration : IEntityTypeConfiguration<ProjectComme
 
         builder.HasOne(pc => pc.Project)
             .WithMany(p => p.Comments)
-            .HasForeignKey(p => p.ProjectID);
+            .HasForeignKey(p => p.ProjectId);
 
         builder.HasOne(pc => pc.User)
             .WithMany(u => u.Comments)
-            .HasForeignKey(pc => pc.UserID);
+            .HasForeignKey(pc => pc.UserId);
     }
 }

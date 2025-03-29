@@ -65,7 +65,7 @@ public class ProjectsController : ControllerBase
     [HttpPost("{id}/comments")]
     public async Task<ActionResult> PostComment(int id, CreateCommentCommand command)
     {
-        if (id != command.IdProject)
+        if (id != command.ProjectId)
             return BadRequest();
 
         await _mediator.Send(command);

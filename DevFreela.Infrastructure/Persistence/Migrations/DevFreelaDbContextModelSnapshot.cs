@@ -24,11 +24,11 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("DevFreela.Core.Entities.Project", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ID"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("CancelledAt")
                         .HasColumnType("datetime(6)");
@@ -65,7 +65,7 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("TotalCost")
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.HasIndex("ClientID");
 
@@ -76,11 +76,11 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("DevFreela.Core.Entities.ProjectComment", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ID"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -90,28 +90,28 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("ProjectID")
+                    b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserID")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("ProjectID");
+                    b.HasIndex("ProjectId");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("DevFreela.Core.Entities.Skill", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ID"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -121,18 +121,18 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Skills");
                 });
 
             modelBuilder.Entity("DevFreela.Core.Entities.User", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ID"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime(6)");
@@ -155,22 +155,22 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("DevFreela.Core.Entities.UserSkill", b =>
                 {
-                    b.Property<int>("IdUser")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdSkill")
+                    b.Property<int>("SkillId")
                         .HasColumnType("int");
 
-                    b.HasKey("IdUser", "IdSkill");
+                    b.HasKey("UserId", "SkillId");
 
-                    b.HasIndex("IdSkill");
+                    b.HasIndex("SkillId");
 
                     b.ToTable("UserSkills");
                 });
@@ -198,13 +198,13 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("DevFreela.Core.Entities.Project", "Project")
                         .WithMany("Comments")
-                        .HasForeignKey("ProjectID")
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DevFreela.Core.Entities.User", "User")
                         .WithMany("Comments")
-                        .HasForeignKey("UserID")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -217,13 +217,13 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("DevFreela.Core.Entities.Skill", "Skill")
                         .WithMany("UserSkills")
-                        .HasForeignKey("IdSkill")
+                        .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DevFreela.Core.Entities.User", "User")
                         .WithMany("UserSkills")
-                        .HasForeignKey("IdUser")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

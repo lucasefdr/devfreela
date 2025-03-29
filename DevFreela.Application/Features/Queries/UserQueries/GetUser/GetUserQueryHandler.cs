@@ -13,6 +13,6 @@ public class GetUserQueryHandler(IUserRepository userRepository) : IRequestHandl
 
         if (user == null) return null;
 
-        return new UserViewModel(user.ID, user.FullName, user.Email, user.IsActive.ToString(), [.. user.UserSkills.Select(us => us.Skill!.Description)]);
+        return new UserViewModel(user.Id, user.FullName, user.Email, user.IsActive.ToString(), [.. user.UserSkills.Select(us => us.Skill!.Description)]);
     }
 }

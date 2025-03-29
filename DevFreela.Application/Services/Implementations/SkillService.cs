@@ -17,7 +17,7 @@ public class SkillService(ISkillRepository skillRepository) : ISkillService
         await skillRepository.CreateAsync(newSkill);
         await skillRepository.CommitAsync();
 
-        return newSkill.ID;
+        return newSkill.Id;
     }
     #endregion
 
@@ -32,19 +32,19 @@ public class SkillService(ISkillRepository skillRepository) : ISkillService
             PageSize = skillsPaged.PageSize,
             TotalCount = skillsPaged.TotalCount,
             TotalPages = skillsPaged.TotalPages,
-            Items = [.. skillsPaged.Items.Select(s => new SkillViewModel(s.ID, s.Description))]
+            Items = [.. skillsPaged.Items.Select(s => new SkillViewModel(s.Id, s.Description))]
         };
 
         return skillsPagedResponse;
     }
 
-    public async Task<SkillViewModel?> GetByID(int id)
+    public async Task<SkillViewModel?> GetById(int id)
     {
         var skill = await skillRepository.FindAsync(id);
 
         if (skill == null) return null;
 
-        return new SkillViewModel(skill.ID, skill.Description);
+        return new SkillViewModel(skill.Id, skill.Description);
     }
     #endregion
 }

@@ -1,11 +1,11 @@
-﻿using DevFreela.Application.Features.Commands.ProjectCommands.CreateProject;
+using DevFreela.Application.DTOs.InputModels.Project;
 using FluentValidation;
 
 namespace DevFreela.Application.Validators.Project;
 
-public class CreateProjectCommandValidator : AbstractValidator<CreateProjectCommand>
+public class CreateProjectInputModelValidator : AbstractValidator<CreateProjectInputModel>
 {
-    public CreateProjectCommandValidator()
+    public CreateProjectInputModelValidator()
     {
         RuleFor(c => c.Title)
             .NotEmpty().WithMessage("{PropertyName} is required.")
