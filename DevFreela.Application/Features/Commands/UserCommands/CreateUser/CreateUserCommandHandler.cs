@@ -10,7 +10,7 @@ public class CreateUserCommandHandler(IUserRepository userRepository) : IRequest
 
     public async Task<int> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = new User(request.FullName, request.Email, request.BirthDate, request.UserType);
+        var user = new User(request.FullName, request.Email, request.BirthDate, request.UserType, request.Password, request.Role);
 
         await _userRepository.CreateAsync(user);
 

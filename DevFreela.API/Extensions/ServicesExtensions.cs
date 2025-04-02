@@ -10,6 +10,8 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using DevFreela.Application.Interfaces;
+using DevFreela.Infrastructure.Auth;
 
 namespace DevFreela.API.Extensions;
 
@@ -52,6 +54,8 @@ public static class ServicesExtensions
         services.AddScoped<IProjectService, ProjectService>()
                 .AddScoped<IUserService, UserService>()
                 .AddScoped<ISkillService, SkillService>();
+
+        services.AddScoped<ITokenService, TokenService>();
 
         // Padrão Option com configurações
         services.Configure<OpeningTimeOption>(configuration.GetSection("OpeningTime"));

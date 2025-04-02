@@ -2,4 +2,9 @@
 
 namespace DevFreela.Application.DTOs.InputModels.User;
 
-public record CreateUserInputModel(string FullName, string Password, string Email, DateTime BirthDate, UserTypeEnum UserType);
+public record CreateUserInputModel(
+    string FullName,
+    string Email,
+    DateTime BirthDate,
+    UserTypeEnum UserType,
+    string Password);

@@ -9,6 +9,7 @@ builder.Services.AddMediatRConfiguration(); // MediatR
 builder.Services.AddRoutesConfiguration(); // Rotas
 builder.Services.AddVersioningConfiguration(); // Versionamento
 builder.Services.AddSwaggerConfiguration(); // Documentação Swagger
+builder.Services.AddJwtAuthentication(builder.Configuration); // Autenticação e autorização
 
 var app = builder.Build();
 

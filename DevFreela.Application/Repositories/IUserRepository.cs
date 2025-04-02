@@ -13,5 +13,6 @@ public interface IUserRepository
     Task<User?> FindAsync(int id);
     Task<User?> GetUserWithSkillsAsync(int id);
     Task<User> CreateAsync(User entity);
+    Task<User?> LoginAsync(string email, string password);
     Task CommitAsync();
 }

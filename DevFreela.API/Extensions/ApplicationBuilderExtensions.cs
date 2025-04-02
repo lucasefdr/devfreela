@@ -25,6 +25,8 @@ public static class ApplicationBuilderExtensions
 
         app.UseHttpsRedirection();
 
+        // Configurações de autorização e autenticação
+        app.UseAuthorization();
         app.UseAuthorization();
 
         app.MapControllers();

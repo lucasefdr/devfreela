@@ -53,12 +53,12 @@ public class ProjectService(
         var project = await projectRepository.FindAsync(model.ProjectId);
 
         if (project == null)
-            return Result.Failure($"Project with ID {model.ProjectId} not found", 400);
+            return Result.Failure($"Project with Id {model.ProjectId} not found", 400);
 
         var user = await userRepository.FindAsync(model.UserId);
         
         if (user == null)
-            return Result.Failure($"User with ID {model.UserId} not found", 400);
+            return Result.Failure($"User with Id {model.UserId} not found", 400);
 
         var comment = new ProjectComment(model.Content, model.ProjectId, model.UserId);
 
@@ -111,7 +111,7 @@ public class ProjectService(
         var project = await FindProject(projectId);
         
         if (project == null)
-            return Result.Failure($"Project with ID {projectId} not found", 400);
+            return Result.Failure($"Project with Id {projectId} not found", 400);
 
         project.Update(model.Title, model.Description, model.TotalCost);
         await projectRepository.CommitAsync();
@@ -161,7 +161,7 @@ public class ProjectService(
         var project = await projectRepository.GetWithDetailsAsync(id);
         
         if (project == null)
-            return Result.Failure<ProjectDetailsViewModel>($"Project with ID {id} not found", 404);
+            return Result.Failure<ProjectDetailsViewModel>($"Project with Id {id} not found", 404);
 
         var projectModel = new ProjectDetailsViewModel(project.Id, project.Title, project.TotalCost, project.Description,
             project.StartedAt, project.FinishedAt, project.CancelledAt, project.Status, project.Client!.FullName,

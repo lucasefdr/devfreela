@@ -5,6 +5,9 @@ using DevFreela.Application.DTOs.ViewModels.User;
 using DevFreela.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using DevFreela.Application.DTOs.InputModels.Login;
+using DevFreela.Application.DTOs.ViewModels.Login;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DevFreela.API.Controllers.v1;
 
@@ -12,6 +15,7 @@ namespace DevFreela.API.Controllers.v1;
 [ApiVersion("1.0")]
 [Route("api/v{v:apiVersion}/[controller]")]
 [ApiController]
+[Authorize]
 public class UsersController(IUserService userService) : ControllerBase
 {
     #region GET
@@ -30,6 +34,7 @@ public class UsersController(IUserService userService) : ControllerBase
     }
 
     [HttpGet("clients")]
+    [Authorize(Roles = "client")]
     public async Task<IActionResult> GetAllClients([FromQuery] QueryParameters parameters)
     {
         var clients = await userService.GetAllClients(parameters);
@@ -39,10 +44,20 @@ public class UsersController(IUserService userService) : ControllerBase
 
     #region POST
     [HttpPost]
+    [AllowAnonymous]
     public async Task<ActionResult> Post([FromBody] CreateUserInputModel model)
     {
         var newId = await userService.Create(model);
         return CreatedAtAction(nameof(GetById), new { v = "1", id = newId }, model);
+    }
+
+    [HttpPost("login")]
+    [AllowAnonymous]
+    public async Task<ActionResult<LoginViewModel>> Login([FromBody] LoginInputModel model)
+    {
+        var result = await userService.Login(model);
+        
+        return result.IsFailure ? StatusCode(result.StatusCode, result.ErrorMessage) : Ok(result.Value);
     }
     #endregion
 

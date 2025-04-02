@@ -59,6 +59,11 @@ public class UserRepository(IRepository<User> repository) : IUserRepository
         return await repository.FindAsync(id);
     }
 
+    public async Task<User?> LoginAsync(string email, string password)
+    {
+        return await repository.GetByAsync(u => u.Email == email && u.Password == password);
+    }
+
     #endregion
 
     #region CREATE

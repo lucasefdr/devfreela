@@ -8,7 +8,7 @@ public class User : BaseEntity
 {
     #region Construtores
 
-    public User(string fullName, string email, DateTime birthDate, UserTypeEnum userType)
+    public User(string fullName, string email, DateTime birthDate, UserTypeEnum userType, string password, string role)
     {
         FullName = fullName;
         Email = email;
@@ -16,6 +16,8 @@ public class User : BaseEntity
         IsActive = true;
         CreatedAt = DateTime.Now;
         UserType = userType;
+        Password = password;
+        Role = role;
 
         UserSkills = [];
         OwnedProjects = [];
@@ -33,6 +35,10 @@ public class User : BaseEntity
     public DateTime CreatedAt { get; private set; }
     public bool IsActive { get; private set; }
     public UserTypeEnum UserType { get; private set; }
+    
+    // Propriedades para autentição e autorização
+    public string Password { get; private set; }
+    public string Role { get; private set; }
 
     #endregion
 
