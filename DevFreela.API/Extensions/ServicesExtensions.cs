@@ -10,14 +10,14 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using DevFreela.Application.Interfaces;
 using DevFreela.Infrastructure.Auth;
 
 namespace DevFreela.API.Extensions;
 
 public static class ServicesExtensions
 {
-    public static IServiceCollection AddApplicationServicesConfiguration(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddApplicationServicesConfiguration(this IServiceCollection services,
+        IConfiguration configuration)
     {
         // Configuração essencial para APIs
         services.AddControllers().ConfigureApiBehaviorOptions(options =>
@@ -45,17 +45,20 @@ public static class ServicesExtensions
         services.AddEndpointsApiExplorer();
 
         // Injeção de dependências
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>))
-                .AddScoped<IProjectRepository, ProjectRepository>()
-                .AddScoped<IUserRepository, UserRepository>()
-                .AddScoped<ISkillRepository, SkillRepository>()
-                .AddScoped<ICommentRepository, CommentRepository>();
+        services
+            .AddScoped(typeof(IRepository<>), typeof(Repository<>))
+            .AddScoped<IProjectRepository, ProjectRepository>()
+            .AddScoped<IUserRepository, UserRepository>()
+            .AddScoped<ISkillRepository, SkillRepository>()
+            .AddScoped<ICommentRepository, CommentRepository>()
+            .AddScoped<IAuthRepository, AuthRepository>();
 
-        services.AddScoped<IProjectService, ProjectService>()
-                .AddScoped<IUserService, UserService>()
-                .AddScoped<ISkillService, SkillService>();
-
-        services.AddScoped<ITokenService, TokenService>();
+        services
+            .AddScoped<IProjectService, ProjectService>()
+            .AddScoped<IUserService, UserService>()
+            .AddScoped<ISkillService, SkillService>()
+            .AddScoped<IAuthService, AuthService>()
+            .AddScoped<ITokenService, TokenService>();
 
         // Padrão Option com configurações
         services.Configure<OpeningTimeOption>(configuration.GetSection("OpeningTime"));

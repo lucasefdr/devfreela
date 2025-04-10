@@ -9,10 +9,6 @@ public class GetUserQueryHandler(IUserRepository userRepository) : IRequestHandl
 
     public async Task<UserViewModel?> Handle(GetUserQuery request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetUserWithSkillsAsync(request.Id);
-
-        if (user == null) return null;
-
-        return new UserViewModel(user.Id, user.FullName, user.Email, user.IsActive.ToString(), [.. user.UserSkills.Select(us => us.Skill!.Description)]);
+        return null;
     }
 }

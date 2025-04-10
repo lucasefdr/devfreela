@@ -2,58 +2,41 @@ namespace DevFreela.Core.Common;
 
 public class Result
 {
-    protected bool IsSuccess { get; set; }
-    public string ErrorMessage { get; set; }
-    public int StatusCode { get; set; }
+    protected bool IsSuccess { get; }
+    public Error? Error { get; }
     public bool IsFailure => !IsSuccess;
 
-    protected Result(bool isSuccess, string errorMessage, int statusCode)
+    protected Result(bool isSuccess, Error? error)
     {
         switch (isSuccess)
         {
-            case true when !string.IsNullOrEmpty(errorMessage):
+            case true when error != null:
                 throw new InvalidOperationException("A successful result cannot contain error.");
-            case false when string.IsNullOrEmpty(errorMessage):
+            case false when error == null:
                 throw new InvalidOperationException("A failure result must contain an error.");
         }
 
         IsSuccess = isSuccess;
-        ErrorMessage = errorMessage;
-        StatusCode = statusCode;
+        Error = error;
     }
 
     // Métodos para resultados que não precisam de um retorno
-    public static Result Success() => new(true, string.Empty, 200);
-    public static Result Failure(string error, int statusCode = 400) => new(false, error, statusCode);
+    public static Result Success() => new(true, null);
+    public static Result Failure(Error error) => new(false, error);
 
     // Métodos para resultados que precisam de um retorno
-    public static Result<T> Success<T>(T value) => Result<T>.Success(value);
-    public static Result<T> Failure<T>(string error, int statusCode = 400) => Result<T>.Failure(error, statusCode);
+    public static Result<T> Success<T>(T value) => new(value, true, null);
+    public static Result<T> Failure<T>(Error error) => new(default!, false, error);
 }
 
 public class Result<T> : Result
 {
     private readonly T _value;
+    public T Value => IsSuccess ? _value : throw new InvalidOperationException("Não há valor para resultados falhos.");
 
-    public T Value
-    {
-        get
-        {
-            // Só há um valor se o resultado for Success
-            if (!IsSuccess)
-                throw new InvalidOperationException("Cannot access the value of a failed result.");
-
-            return _value;
-        }
-    }
-
-    // Construtor que passa as informações para a classe base e acrescenta o valor de tipo genérico
-    private Result(T value, bool isSuccess, string error, int statusCode) : base(isSuccess, error,
-        statusCode)
+    protected internal Result(T value, bool isSuccess, Error? error)
+        : base(isSuccess, error)
     {
         _value = value;
     }
-
-    public static Result<T> Success(T value) => new(value, true, string.Empty, 200);
-    public new static Result<T> Failure(string error, int statusCode = 400) => new(default!, false, error, statusCode);
 }

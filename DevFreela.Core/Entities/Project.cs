@@ -43,7 +43,7 @@ public class Project : BaseEntity
     public Result Cancel()
     {
         if (Status != ProjectStatusEnum.InProgress && Status != ProjectStatusEnum.Created)
-            return Result.Failure("Only projects with Created or InProgress status can be canceled.");
+            return Result.Failure(Error.Validation("Project.Cancel", "Project cannot be cancelled."));
         
         Status = ProjectStatusEnum.Cancelled;
         CancelledAt = DateTime.Now;
@@ -54,7 +54,7 @@ public class Project : BaseEntity
     {
         if (Status != ProjectStatusEnum.Created)
         {
-            return Result.Failure("Only projects with Created status can be started.");
+            return Result.Failure(Error.Validation("Project.Start", "Project cannot be started."));
         }
         
         Status = ProjectStatusEnum.InProgress;
@@ -66,7 +66,7 @@ public class Project : BaseEntity
     {
         if (Status != ProjectStatusEnum.InProgress)
         {
-            return Result.Failure("Only projects with InProgress status can be finished.");
+            return Result.Failure(Error.Validation("Project.Finish", "Project cannot be finished."));
         }
         
         Status = ProjectStatusEnum.Finished;

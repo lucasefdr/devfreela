@@ -1,4 +1,5 @@
 ﻿using DevFreela.Core.Entities;
+using DevFreela.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,14 +10,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.HasKey(u => u.Id);
-        builder.HasIndex(u => u.Email)
-            .IsUnique();
-        
-        builder.Property(u => u.CreatedAt)
-            .IsRequired();
-
-        builder.Property(u => u.Email)
-            .IsRequired();
 
         builder.Property(u => u.BirthDate)
             .IsRequired();
@@ -27,10 +20,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.UserType)
             .IsRequired()
             .HasConversion<string>();
-
-        builder.Property(u => u.Password)
-            .IsRequired();
-
-        builder.Property(u => u.Role);
+        
+        builder.HasOne<ApplicationUser>()
+            .WithOne()
+            .HasForeignKey<User>(u => u.Id) // FK para AspNetUsers (Id)
+            .OnDelete(DeleteBehavior.Cascade); // Se ApplicationUser for excluído, User também vai
     }
 }

@@ -1,9 +1,6 @@
 ﻿using DevFreela.Application.Common;
 using DevFreela.Application.DTOs.InputModels.Login;
-using DevFreela.Application.DTOs.InputModels.User;
-using DevFreela.Application.DTOs.ViewModels.Login;
 using DevFreela.Application.DTOs.ViewModels.User;
-using DevFreela.Application.Interfaces;
 using DevFreela.Application.Repositories;
 using DevFreela.Application.Services.Interfaces;
 using DevFreela.Core.Common;
@@ -14,16 +11,15 @@ namespace DevFreela.Application.Services.Implementations;
 
 public class UserService(
     IUserRepository userRepository,
-    ISkillRepository skillRepository,
-    ITokenService tokenService) : IUserService
+    ISkillRepository skillRepository) : IUserService
 {
     #region GET
 
-    public async Task<PagedResult<UserViewModel>> GetAllFreelancers(QueryParameters parameters)
+    public async Task<PagedResult<FreelancerViewModel>> GetAllFreelancers(QueryParameters parameters)
     {
         var freelancersPaged = await userRepository.GetFreelancersAsync(parameters);
 
-        var freelancersPagedResponse = new PagedResult<UserViewModel>
+        var freelancersPagedResponse = new PagedResult<FreelancerViewModel>
         {
             CurrentPage = freelancersPaged.CurrentPage,
             PageSize = freelancersPaged.PageSize,
@@ -32,7 +28,10 @@ public class UserService(
             Items =
             [
                 .. freelancersPaged.Items
-                    .Select(f => new UserViewModel(f.Id, f.FullName, f.Email, f.IsActive.ToString(),
+                    .Select(f => new FreelancerViewModel(
+                        f.Id,
+                        f.FullName,
+                        f.IsActive.ToString(),
                         [.. f.UserSkills.Select(us => us.Skill!.Description)]))
             ]
         };
@@ -40,11 +39,27 @@ public class UserService(
         return freelancersPagedResponse;
     }
 
-    public async Task<PagedResult<UserViewModel>> GetAllClients(QueryParameters parameters)
+    public async Task<Result<FreelancerViewModel>> GetFreelancerWithDetails(int id)
+    {
+        var freelancer = await userRepository.GetFreelancerWithDetailsAsync(id);
+
+        if (freelancer is null)
+            return Result.Failure<FreelancerViewModel>(Error.NotFound("User.NotFound", "Freelancer not found."));
+
+        var response = new FreelancerViewModel(
+            freelancer.Id,
+            freelancer.FullName,
+            freelancer.IsActive.ToString(),
+            [.. freelancer.UserSkills.Select(us => us.Skill!.Description)]);
+
+        return Result.Success(response);
+    }
+
+    public async Task<PagedResult<ClientViewModel>> GetAllClients(QueryParameters parameters)
     {
         var clientsPaged = await userRepository.GetClientsAsync(parameters);
 
-        var clientsPagedResponse = new PagedResult<UserViewModel>
+        var clientsPagedResponse = new PagedResult<ClientViewModel>
         {
             CurrentPage = clientsPaged.CurrentPage,
             PageSize = clientsPaged.PageSize,
@@ -53,7 +68,10 @@ public class UserService(
             Items =
             [
                 .. clientsPaged.Items
-                    .Select(c => new UserViewModel(c.Id, c.FullName, c.Email, c.IsActive.ToString(),
+                    .Select(c => new ClientViewModel(
+                        c.Id,
+                        c.FullName,
+                        c.IsActive.ToString(),
                         [.. c.UserSkills.Select(us => us.Skill!.Description)]))
             ]
         };
@@ -61,18 +79,20 @@ public class UserService(
         return clientsPagedResponse;
     }
 
-    public async Task<Result<UserViewModel>> GetById(int id)
+    public async Task<Result<ClientViewModel>> GetClientWithDetails(int id)
     {
-        var user = await userRepository.GetUserWithSkillsAsync(id);
+        var freelancer = await userRepository.GetFreelancerWithDetailsAsync(id);
 
-        if (user == null)
-            return Result.Failure<UserViewModel>($"User with Id {id} not found.", 404);
+        if (freelancer is null)
+            return Result.Failure<ClientViewModel>(Error.NotFound("User.NotFound", "Freelancer not found."));
 
-        var userViewModel = new UserViewModel(
-            user.Id, user.FullName, user.Email, user.IsActive.ToString(),
-            [.. user.UserSkills.Select(us => us.Skill!.Description)]);
+        var response = new ClientViewModel(
+            freelancer.Id,
+            freelancer.FullName,
+            freelancer.IsActive.ToString(),
+            [.. freelancer.UserSkills.Select(us => us.Skill!.Description)]);
 
-        return Result.Success(userViewModel);
+        return Result.Success(response);
     }
 
     #endregion
@@ -81,20 +101,20 @@ public class UserService(
 
     public async Task<Result> AddSkillToUser(int userId, int skillId)
     {
-        var user = await userRepository.Get(userId);
+        var user = await FindUserOrFail(userId);
 
-        if (user == null)
-            return Result.Failure($"User with Id {userId} not found", 404);
+        if (user.IsFailure)
+            return Result.Failure<UserViewModel>(user.Error!);
 
         var skill = await skillRepository.FindAsync(skillId);
 
         if (skill == null)
-            return Result.Failure($"Skill with Id {skillId} not found", 404);
+            return Result.Failure(Error.NotFound("Skill", $"Skill with Id {skillId} not found."));
 
-        var result = user.AddSkill(skill);
+        var result = user.Value.AddSkill(skill);
 
         if (result.IsFailure)
-            return Result.Failure(result.ErrorMessage, 400);
+            return Result.Failure(result.Error!);
 
         await userRepository.CommitAsync();
 
@@ -103,15 +123,15 @@ public class UserService(
 
     public async Task<Result> ActiveUser(int id)
     {
-        var user = await userRepository.FindAsync(id);
+        var user = await FindUserOrFail(id);
 
-        if (user == null)
-            return Result.Failure($"User with Id {id} not found", 404);
+        if (user.IsFailure)
+            return Result.Failure(user.Error!);
 
-        var result = user.ActiveUser();
+        var result = user.Value.ActiveUser();
 
         if (result.IsFailure)
-            return Result.Failure(result.ErrorMessage, 400);
+            return Result.Failure(user.Error!);
 
         await userRepository.CommitAsync();
         return Result.Success();
@@ -119,15 +139,15 @@ public class UserService(
 
     public async Task<Result> InactiveUser(int id)
     {
-        var user = await userRepository.FindAsync(id);
+        var user = await FindUserOrFail(id);
 
-        if (user == null)
-            return Result.Failure($"User with Id {id} not found", 404);
+        if (user.IsFailure)
+            return Result.Failure(user.Error!);
 
-        var result = user.InactiveUser();
+        var result = user.Value.InactiveUser();
 
         if (result.IsFailure)
-            return Result.Failure(result.ErrorMessage, 400);
+            return Result.Failure(result.Error!);
 
         await userRepository.CommitAsync();
         return Result.Success();
@@ -135,42 +155,16 @@ public class UserService(
 
     #endregion
 
-    #region CREATE
 
-    public async Task<int> Create(CreateUserInputModel inputModel)
+    #region METHODS
+
+    private async Task<Result<User>> FindUserOrFail(int id)
     {
-        var passwordHash = tokenService.ComputePasswordHash(inputModel.Password);
+        var user = await userRepository.FindAsync(id);
 
-        var role = inputModel.UserType.Equals(UserTypeEnum.CLIENT)
-            ? "client"
-            : "freelancer";
-
-        var newUser = new User(
-            inputModel.FullName,
-            inputModel.Email,
-            inputModel.BirthDate,
-            inputModel.UserType,
-            passwordHash,
-            role);
-
-        await userRepository.CreateAsync(newUser);
-        await userRepository.CommitAsync();
-        return newUser.Id;
-    }
-
-    public async Task<Result<LoginViewModel>> Login(LoginInputModel inputModel)
-    {
-        var passwordHash = tokenService.ComputePasswordHash(inputModel.Password);
-
-        var user = await userRepository.LoginAsync(inputModel.Email, passwordHash);
-
-        if (user == null)
-            return Result.Failure<LoginViewModel>("Invalid credentials", 400);
-
-        var token = tokenService.GenerateJwtToken(user.Email, user.FullName, user.Role);
-        var response = new LoginViewModel(token);
-
-        return Result.Success(response);
+        return user is null
+            ? Result.Failure<User>(Error.NotFound("User", $"User with ID {id} not found."))
+            : Result.Success(user);
     }
 
     #endregion

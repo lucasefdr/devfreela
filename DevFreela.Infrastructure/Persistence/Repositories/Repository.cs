@@ -43,5 +43,8 @@ public class Repository<TEntity>(DevFreelaDbContext context) : IRepository<TEnti
         return Task.CompletedTask;
     }
 
-    public async Task CommitAsync() => await _context.SaveChangesAsync();
+    public async Task CommitAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
 }

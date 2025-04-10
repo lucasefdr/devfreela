@@ -1,13 +1,21 @@
-﻿using DevFreela.Application.Common;
+﻿using System.Security.Claims;
+using DevFreela.Application.Common;
 using DevFreela.Application.Repositories;
+using DevFreela.Core.Common;
 using DevFreela.Core.Entities;
 using DevFreela.Core.Enums;
+using DevFreela.Infrastructure.Auth;
+using DevFreela.Infrastructure.Identity;
 using DevFreela.Infrastructure.Persistence.Extensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Infrastructure.Persistence.Repositories;
 
-public class UserRepository(IRepository<User> repository) : IUserRepository
+public class UserRepository(
+    IRepository<User> repository,
+    UserManager<ApplicationUser> manager,
+    ITokenService tokenService) : IUserRepository
 {
     #region READ
 
@@ -24,6 +32,17 @@ public class UserRepository(IRepository<User> repository) : IUserRepository
         return await query.ToPagedResultAsync(parameters);
     }
 
+    public async Task<User?> GetFreelancerWithDetailsAsync(int id)
+    {
+        return await repository.GetAll()
+            .AsNoTracking()
+            .Where(u => u.UserType == UserTypeEnum.FREELANCER)
+            .Include(u => u.UserSkills)
+            .ThenInclude(s => s.Skill)
+            .Include(u => u.FreelancerProjects)
+            .FirstOrDefaultAsync(u => u.Id == id);
+    }
+
     public async Task<PagedResult<User>> GetClientsAsync(QueryParameters parameters)
     {
         string[] searchableProperties = ["FullName"];
@@ -37,6 +56,14 @@ public class UserRepository(IRepository<User> repository) : IUserRepository
         return await query.ToPagedResultAsync(parameters);
     }
 
+    public async Task<User?> GetClientWithDetailsAsync(int id)
+    {
+        return await repository.GetAll()
+            .AsNoTracking()
+            .Where(u => u.UserType == UserTypeEnum.CLIENT)
+            .Include(u => u.OwnedProjects)
+            .FirstOrDefaultAsync(u => u.Id == id);
+    }
 
     public async Task<User?> Get(int id)
     {
@@ -45,37 +72,17 @@ public class UserRepository(IRepository<User> repository) : IUserRepository
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 
-    public async Task<User?> GetUserWithSkillsAsync(int id)
-    {
-        return await repository.GetAll()
-            .Include(u => u.UserSkills)
-            .ThenInclude(s => s.Skill)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
-    }
+
+
 
     public async Task<User?> FindAsync(int id)
     {
         return await repository.FindAsync(id);
     }
 
-    public async Task<User?> LoginAsync(string email, string password)
-    {
-        return await repository.GetByAsync(u => u.Email == email && u.Password == password);
-    }
-
     #endregion
 
-    #region CREATE
-
-    public async Task<User> CreateAsync(User entity)
-    {
-        await repository.CreateAsync(entity);
-        return entity;
-    }
-
-    #endregion
-
+  
 
     public async Task CommitAsync()
     {

@@ -1,9 +1,9 @@
-using DevFreela.Application.DTOs.InputModels.User;
+using DevFreela.Application.DTOs.InputModels.Login;
 using FluentValidation;
 
 namespace DevFreela.Application.Validators.User;
 
-public class CreateUserInputModelValidator : AbstractValidator<CreateUserInputModel>
+public class CreateUserInputModelValidator : AbstractValidator<RegisterUserInputModel>
 {
     public CreateUserInputModelValidator()
     {

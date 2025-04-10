@@ -33,7 +33,7 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
         var result = await projectService.GetById(id);
 
         return result.IsFailure
-            ? NotFound(new { error = result.ErrorMessage })
+            ? this.MapErrorToHttpResponse(result.Error!)
             : Ok(result.Value);
     }
 
@@ -42,17 +42,17 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
     #region POST
 
     [HttpPost]
-    public async Task<ActionResult> Post(CreateProjectInputModel model)
+    public async Task<IActionResult> Post(CreateProjectInputModel model)
     {
         var result = await projectService.Create(model);
 
         return result.IsFailure
-            ? StatusCode(result.StatusCode, new { error = result.ErrorMessage })
-            : CreatedAtAction(nameof(GetById), new { v = "1", id = result.Value }, model);
+            ? this.MapErrorToHttpResponse(result.Error!)
+            : NoContent();
     }
 
     [HttpPost("{id:int}/comments")]
-    public async Task<ActionResult> PostComment(int id, CreateCommentInputModel model)
+    public async Task<IActionResult> PostComment(int id, CreateCommentInputModel model)
     {
         if (id != model.ProjectId)
             return BadRequest();
@@ -60,7 +60,7 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
         var result = await projectService.CreateComment(model);
 
         return result.IsFailure
-            ? StatusCode(result.StatusCode, new { error = result.ErrorMessage })
+            ? this.MapErrorToHttpResponse(result.Error!)
             : NoContent();
     }
 
@@ -69,36 +69,33 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
     #region PUT
 
     [HttpPut("{id:int}/start")]
-    public async Task<ActionResult> Start(int id)
+    public async Task<IActionResult> Start(int id)
     {
         var result = await projectService.Start(id);
 
-        if (result.IsFailure)
-            return StatusCode(result.StatusCode, new { error = result.ErrorMessage });
-
-        return NoContent();
+        return result.IsFailure
+            ? this.MapErrorToHttpResponse(result.Error!)
+            : NoContent();
     }
 
     [HttpPut("{id:int}/finish")]
-    public async Task<ActionResult> Finish(int id)
+    public async Task<IActionResult> Finish(int id)
     {
         var result = await projectService.Finish(id);
 
-        if (result.IsFailure)
-            return StatusCode(result.StatusCode, new { error = result.ErrorMessage });
-
-        return NoContent();
+        return result.IsFailure
+            ? this.MapErrorToHttpResponse(result.Error!)
+            : NoContent();
     }
 
     [HttpPut("{id:int}/cancel")]
-    public async Task<ActionResult> Cancel(int id)
+    public async Task<IActionResult> Cancel(int id)
     {
         var result = await projectService.Cancel(id);
 
-        if (result.IsFailure)
-            return StatusCode(result.StatusCode, new { error = result.ErrorMessage });
-
-        return NoContent();
+        return result.IsFailure
+            ? this.MapErrorToHttpResponse(result.Error!)
+            : NoContent();
     }
 
     [HttpPut("{id:int}")]
